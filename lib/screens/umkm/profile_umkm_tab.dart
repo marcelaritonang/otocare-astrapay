@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
 
 class ProfileUmkmTab extends StatefulWidget {
@@ -429,9 +430,7 @@ class _ProfileUmkmTabState extends State<ProfileUmkmTab> {
           AppTheme.primaryBlue,
           enabled: true,
           badge: 'AstraPay',
-          onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-            _buildSnackBar('QRIS AstraPay aktif dan siap menerima pembayaran'),
-          ),
+          onTap: () => _showQRISBengkel(context),
         ),
         const Divider(height: 1, indent: 66),
         _paymentTile(
@@ -452,6 +451,149 @@ class _ProfileUmkmTabState extends State<ProfileUmkmTab> {
           subtitle: 'Segera Hadir',
         ),
       ],
+    );
+  }
+
+  void _showQRISBengkel(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        height: MediaQuery.of(ctx).size.height * 0.75,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: const Color(0xFFE8EBF0), borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            const Text('QRIS Bengkel Anda', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const SizedBox(height: 4),
+            const Text('Tunjukkan ke pelanggan untuk menerima pembayaran', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+            const SizedBox(height: 24),
+            // QRIS Card
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.2), width: 2),
+                boxShadow: [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.08), blurRadius: 20, offset: const Offset(0, 6))],
+              ),
+              child: Column(
+                children: [
+                  // QRIS header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.network(
+                        'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/QRIS_logo.svg/120px-QRIS_logo.svg.png',
+                        width: 60,
+                        height: 24,
+                        errorBuilder: (_, __, ___) => const Text('QRIS', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppTheme.primaryBlue)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // QR Code
+                  QrImageView(
+                    data: '00020101021226670016COM.ASTRAPAY.WWW0118936000091200001230221BENGKEL-JAYAMOTOR-BDG5204541153033605802ID5917Bengkel Jaya Motor6007Bandung61054023262070503***63041B2A',
+                    version: QrVersions.auto,
+                    size: 200,
+                    eyeStyle: const QrEyeStyle(
+                      eyeShape: QrEyeShape.square,
+                      color: Color(0xFF1A1A2E),
+                    ),
+                    dataModuleStyle: const QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: Color(0xFF1A1A2E),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Bengkel Jaya Motor', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+                  const SizedBox(height: 2),
+                  Text('NMID: ID102300112345678', style: TextStyle(fontSize: 11, color: AppTheme.textGrey, letterSpacing: 0.5)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Info chips
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(color: AppTheme.successGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.verified, color: AppTheme.successGreen, size: 14),
+                      const SizedBox(width: 4),
+                      Text('Verified Merchant', style: TextStyle(fontSize: 11, color: AppTheme.successGreen, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.shield, color: AppTheme.primaryBlue, size: 14),
+                      const SizedBox(width: 4),
+                      Text('AstraPay', style: TextStyle(fontSize: 11, color: AppTheme.primaryBlue, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const Spacer(),
+            // Actions
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(_buildSnackBar('QRIS disimpan ke galeri'));
+                    },
+                    icon: const Icon(Icons.download_rounded, size: 18),
+                    label: const Text('Simpan'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.primaryBlue,
+                      side: const BorderSide(color: AppTheme.primaryBlue),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(_buildSnackBar('QRIS dibagikan'));
+                    },
+                    icon: const Icon(Icons.share_rounded, size: 18),
+                    label: const Text('Bagikan'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 

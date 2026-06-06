@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
 import 'home_tab.dart';
 import 'bengkel_tab.dart';
@@ -482,15 +483,50 @@ class _QRPaymentSheetState extends State<_QRPaymentSheet> with SingleTickerProvi
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    width: 200,
-                    height: 200,
+                    width: 220,
+                    height: 220,
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F8FC),
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.2), width: 2),
                     ),
-                    child: const Center(
-                      child: Icon(Icons.qr_code_2, size: 160, color: AppTheme.textDark),
+                    child: QrImageView(
+                      data: '00020101021126670016COM.ASTRAPAY.WWW0118936000091200001230217OTOCARE-USR-08125204541153033605802ID5913Marcel Ariton6007Bandung61054023262190515OTOCARE20260812630481A2',
+                      version: QrVersions.auto,
+                      size: 196,
+                      eyeStyle: const QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: Color(0xFF1A1A2E),
+                      ),
+                      dataModuleStyle: const QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.square,
+                        color: Color(0xFF1A1A2E),
+                      ),
+                      embeddedImage: null,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.network(
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/QRIS_logo.svg/120px-QRIS_logo.svg.png',
+                          width: 40,
+                          height: 16,
+                          errorBuilder: (_, __, ___) => const Text('QRIS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppTheme.primaryBlue)),
+                        ),
+                        const SizedBox(width: 6),
+                        const Text('·', style: TextStyle(color: AppTheme.primaryBlue)),
+                        const SizedBox(width: 6),
+                        const Text('AstraPay', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 16),
