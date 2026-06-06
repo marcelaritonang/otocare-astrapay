@@ -289,7 +289,7 @@ class _AppointmentTabState extends State<AppointmentTab> with SingleTickerProvid
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {},
+                    onPressed: () => _rejectBooking(booking),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.red,
                       side: const BorderSide(color: Colors.red),
@@ -312,6 +312,60 @@ class _AppointmentTabState extends State<AppointmentTab> with SingleTickerProvid
               ],
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  void _rejectBooking(Map<String, dynamic> booking) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Tolak Booking'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Apakah kamu yakin ingin menolak booking dari ${booking['customer']}?'),
+            const SizedBox(height: 8),
+            Text('Motor: ${booking['motor']}', style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
+            Text('Layanan: ${booking['service']}', style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
+            const SizedBox(height: 12),
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Alasan penolakan (opsional)',
+                hintText: 'Contoh: Jadwal penuh',
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                isDense: true,
+              ),
+              maxLines: 2,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              setState(() {
+                booking['status'] = 'rejected';
+                _todayBookings.remove(booking);
+                _upcomingBookings.remove(booking);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Booking ${booking['customer']} ditolak'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Tolak', style: TextStyle(color: Colors.white)),
+          ),
         ],
       ),
     );
@@ -347,9 +401,12 @@ class _AppointmentTabState extends State<AppointmentTab> with SingleTickerProvid
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
+              setState(() {
+                booking['status'] = 'confirmed';
+              });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Booking ${booking['customer']} dikonfirmasi ✓'),
+                  content: Text('Booking ${booking['customer']} dikonfirmasi'),
                   backgroundColor: AppTheme.successGreen,
                 ),
               );
