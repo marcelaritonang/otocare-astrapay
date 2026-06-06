@@ -10,12 +10,12 @@ class ProfileUmkmTab extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            _buildHeader(),
+            _buildHeader(context),
             _buildProfileInfo(),
             _buildLocationSection(),
             _buildOperationalHours(),
             _buildPaymentMethods(),
-            _buildAstraPaySection(),
+            _buildAstraPaySection(context),
             const SizedBox(height: 24),
           ],
         ),
@@ -23,7 +23,7 @@ class ProfileUmkmTab extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
@@ -34,16 +34,19 @@ class ProfileUmkmTab extends StatelessWidget {
               const Expanded(
                 child: Text('Profil Bisnis', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.edit, color: Colors.white, size: 14),
-                    SizedBox(width: 4),
-                    Text('Edit', style: TextStyle(color: Colors.white, fontSize: 12)),
-                  ],
+              GestureDetector(
+                onTap: () => _showEditProfileModal(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.edit, color: Colors.white, size: 14),
+                      SizedBox(width: 4),
+                      Text('Edit', style: TextStyle(color: Colors.white, fontSize: 12)),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -135,7 +138,6 @@ class ProfileUmkmTab extends StatelessWidget {
             const SizedBox(height: 12),
             _infoRow(Icons.location_on, 'Alamat', 'Jl. Raya Margahayu No. 15\nBandung, Jawa Barat 40286'),
             const SizedBox(height: 8),
-            // Map placeholder
             Container(
               height: 100,
               decoration: BoxDecoration(
@@ -228,7 +230,7 @@ class ProfileUmkmTab extends StatelessWidget {
     );
   }
 
-  Widget _buildAstraPaySection() {
+  Widget _buildAstraPaySection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Container(
@@ -280,7 +282,7 @@ class ProfileUmkmTab extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {},
+                onPressed: () => _showPinjamanModal(context),
                 icon: const Icon(Icons.monetization_on, size: 16),
                 label: const Text('Ajukan Pinjaman Modal', style: TextStyle(fontSize: 12)),
                 style: OutlinedButton.styleFrom(
@@ -291,6 +293,147 @@ class ProfileUmkmTab extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showEditProfileModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 20),
+              const Text('Edit Profil Bisnis', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                decoration: InputDecoration(labelText: 'Nama Bengkel', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                controller: TextEditingController(text: 'Bengkel Jaya Motor'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                decoration: InputDecoration(labelText: 'Nama Pemilik', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                controller: TextEditingController(text: 'Pak Budi Setiawan'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                decoration: InputDecoration(labelText: 'Nomor Telepon', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                controller: TextEditingController(text: '0812-3456-7890'),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                decoration: InputDecoration(labelText: 'Email', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                controller: TextEditingController(text: 'jayamotor@email.com'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                decoration: InputDecoration(labelText: 'Alamat', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                controller: TextEditingController(text: 'Jl. Raya Margahayu No. 15, Bandung'),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Profil berhasil diperbarui'),
+                        backgroundColor: AppTheme.successGreen,
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  child: const Text('Simpan Perubahan'),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showPinjamanModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Container(
+              width: 36, height: 36,
+              decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+              child: const Icon(Icons.monetization_on, color: AppTheme.primaryBlue, size: 20),
+            ),
+            const SizedBox(width: 10),
+            const Text('Pinjaman Modal'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Ajukan pinjaman modal usaha melalui AstraPay Bisnis untuk mengembangkan bengkel kamu.',
+              style: TextStyle(fontSize: 13, color: AppTheme.textGrey, height: 1.4),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Keuntungan:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                  SizedBox(height: 6),
+                  Text('• Bunga rendah mulai 0.5%/bulan', style: TextStyle(fontSize: 12, color: AppTheme.textDark)),
+                  Text('• Tenor fleksibel 3-12 bulan', style: TextStyle(fontSize: 12, color: AppTheme.textDark)),
+                  Text('• Pencairan cepat ke saldo AstraPay', style: TextStyle(fontSize: 12, color: AppTheme.textDark)),
+                  Text('• Tanpa jaminan hingga Rp 50jt', style: TextStyle(fontSize: 12, color: AppTheme.textDark)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Limit pinjaman kamu: Rp 25.000.000',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Tutup'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Pengajuan pinjaman modal sedang diproses'),
+                  backgroundColor: AppTheme.primaryBlue,
+                ),
+              );
+            },
+            child: const Text('Ajukan Sekarang'),
+          ),
+        ],
       ),
     );
   }

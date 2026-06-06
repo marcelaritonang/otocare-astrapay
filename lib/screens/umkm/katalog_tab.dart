@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
 
-class KatalogTab extends StatelessWidget {
+class KatalogTab extends StatefulWidget {
   const KatalogTab({super.key});
 
-  final List<Map<String, dynamic>> _services = const [
+  @override
+  State<KatalogTab> createState() => _KatalogTabState();
+}
+
+class _KatalogTabState extends State<KatalogTab> {
+  final List<Map<String, dynamic>> _services = [
     {'name': 'Ganti Oli', 'price': 'Rp 50.000 - 85.000', 'duration': '15 menit', 'icon': Icons.oil_barrel, 'popular': true},
     {'name': 'Tune Up', 'price': 'Rp 80.000 - 150.000', 'duration': '30 menit', 'icon': Icons.settings, 'popular': true},
     {'name': 'Servis Berkala', 'price': 'Rp 150.000 - 350.000', 'duration': '60 menit', 'icon': Icons.build, 'popular': false},
@@ -107,8 +112,15 @@ class KatalogTab extends StatelessWidget {
                   ],
                 ),
               ),
-              PopupMenuButton(
+              PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, color: AppTheme.textGrey, size: 20),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _showEditService(context, service, index);
+                  } else if (value == 'delete') {
+                    _showDeleteConfirmation(context, service, index);
+                  }
+                },
                 itemBuilder: (ctx) => [
                   const PopupMenuItem(value: 'edit', child: Text('Edit')),
                   const PopupMenuItem(value: 'delete', child: Text('Hapus')),
@@ -118,6 +130,105 @@ class KatalogTab extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showEditService(BuildContext context, Map<String, dynamic> service, int index) {
+    final nameController = TextEditingController(text: service['name']);
+    final priceController = TextEditingController(text: service['price']);
+    final durationController = TextEditingController(text: (service['duration'] as String).replaceAll(' menit', ''));
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+              const SizedBox(height: 20),
+              const Text('Edit Layanan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'Nama Layanan', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: priceController,
+                decoration: InputDecoration(labelText: 'Harga', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: durationController,
+                decoration: InputDecoration(labelText: 'Durasi (menit)', border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _services[index]['name'] = nameController.text;
+                      _services[index]['price'] = priceController.text;
+                      _services[index]['duration'] = '${durationController.text} menit';
+                    });
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Layanan berhasil diperbarui'),
+                        backgroundColor: AppTheme.successGreen,
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  child: const Text('Simpan Perubahan'),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, Map<String, dynamic> service, int index) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Hapus Layanan'),
+        content: Text('Apakah kamu yakin ingin menghapus layanan "${service['name']}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                _services.removeAt(index);
+              });
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Layanan "${service['name']}" dihapus'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

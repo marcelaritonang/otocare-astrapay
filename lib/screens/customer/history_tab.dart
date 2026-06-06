@@ -12,6 +12,9 @@ class HistoryTab extends StatelessWidget {
       'cost': 'Rp 185.000',
       'status': 'completed',
       'hasReceipt': true,
+      'paymentMethod': 'AstraPay',
+      'rating': 5,
+      'details': 'Oli Yamalube Gold 10W-40 1L, Busi NGK, Filter udara',
     },
     {
       'bengkel': 'Mitra Motor Sejahtera',
@@ -20,6 +23,9 @@ class HistoryTab extends StatelessWidget {
       'cost': 'Rp 120.000',
       'status': 'completed',
       'hasReceipt': true,
+      'paymentMethod': 'AstraPay',
+      'rating': 4,
+      'details': 'Kampas rem Indoparts, termasuk jasa pasang',
     },
     {
       'bengkel': 'Bengkel Pak Budi',
@@ -28,6 +34,9 @@ class HistoryTab extends StatelessWidget {
       'cost': 'Rp 350.000',
       'status': 'completed',
       'hasReceipt': false,
+      'paymentMethod': 'Cash',
+      'rating': 0,
+      'details': 'Ganti oli, cek rem, setel rantai, bersihkan karburator',
     },
     {
       'bengkel': 'Bengkel Jaya Motor',
@@ -36,6 +45,9 @@ class HistoryTab extends StatelessWidget {
       'cost': 'Rp 85.000',
       'status': 'completed',
       'hasReceipt': true,
+      'paymentMethod': 'AstraPay',
+      'rating': 0,
+      'details': 'Oli Yamalube Gold 10W-40 1L',
     },
     {
       'bengkel': 'Speed Motor Workshop',
@@ -44,6 +56,9 @@ class HistoryTab extends StatelessWidget {
       'cost': 'Rp 280.000',
       'status': 'completed',
       'hasReceipt': false,
+      'paymentMethod': 'Cash',
+      'rating': 3,
+      'details': 'V-Belt Daytona Racing, Roller 10g x 6pcs',
     },
   ];
 
@@ -154,70 +169,250 @@ class HistoryTab extends StatelessWidget {
   }
 
   Widget _buildHistoryCard(BuildContext context, Map<String, dynamic> item) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 40, height: 40,
-                decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.build, color: AppTheme.primaryBlue, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(item['bengkel'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-                    Text(item['date'], style: const TextStyle(fontSize: 11, color: AppTheme.textGrey)),
-                  ],
+    return GestureDetector(
+      onTap: () => _showHistoryDetail(context, item),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40, height: 40,
+                  decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.build, color: AppTheme.primaryBlue, size: 20),
                 ),
-              ),
-              Text(item['cost'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.08), borderRadius: BorderRadius.circular(6)),
-                child: Text(item['service'], style: TextStyle(fontSize: 11, color: AppTheme.primaryBlue)),
-              ),
-              const Spacer(),
-              if (item['hasReceipt'])
-                Row(
-                  children: [
-                    Icon(Icons.receipt_long, color: AppTheme.successGreen, size: 14),
-                    const SizedBox(width: 4),
-                    Text('Struk', style: TextStyle(fontSize: 11, color: AppTheme.successGreen, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              if (!item['hasReceipt'])
-                GestureDetector(
-                  onTap: () => _showOCRSheet(context),
-                  child: Row(
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.add_a_photo, color: AppTheme.warningOrange, size: 14),
-                      const SizedBox(width: 4),
-                      Text('Tambah Struk', style: TextStyle(fontSize: 11, color: AppTheme.warningOrange, fontWeight: FontWeight.w500)),
+                      Text(item['bengkel'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                      Text(item['date'], style: const TextStyle(fontSize: 11, color: AppTheme.textGrey)),
                     ],
                   ),
                 ),
+                Text(item['cost'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.08), borderRadius: BorderRadius.circular(6)),
+                  child: Text(item['service'], style: const TextStyle(fontSize: 11, color: AppTheme.primaryBlue)),
+                ),
+                const Spacer(),
+                if (item['hasReceipt'])
+                  const Row(
+                    children: [
+                      Icon(Icons.receipt_long, color: AppTheme.successGreen, size: 14),
+                      SizedBox(width: 4),
+                      Text('Struk', style: TextStyle(fontSize: 11, color: AppTheme.successGreen, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                if (!item['hasReceipt'])
+                  GestureDetector(
+                    onTap: () => _showOCRSheet(context),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.add_a_photo, color: AppTheme.warningOrange, size: 14),
+                        SizedBox(width: 4),
+                        Text('Tambah Struk', style: TextStyle(fontSize: 11, color: AppTheme.warningOrange, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showHistoryDetail(BuildContext context, Map<String, dynamic> item) {
+    final int rating = item['rating'] as int;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+            const SizedBox(height: 20),
+            const Text('Detail Service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const SizedBox(height: 16),
+            // Bengkel name
+            Row(
+              children: [
+                Container(
+                  width: 48, height: 48,
+                  decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                  child: const Icon(Icons.store, color: AppTheme.primaryBlue, size: 24),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item['bengkel'], style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                      Text(item['date'], style: const TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(height: 1),
+            const SizedBox(height: 16),
+            // Detail rows
+            _detailRow('Layanan', item['service']),
+            _detailRow('Detail', item['details']),
+            _detailRow('Biaya', item['cost']),
+            _detailRow('Pembayaran', item['paymentMethod']),
+            _detailRow('Struk', item['hasReceipt'] ? 'Tersedia' : 'Belum ada'),
+            const SizedBox(height: 16),
+            // Rating section
+            if (rating > 0) ...[
+              const Text('Rating', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+              const SizedBox(height: 4),
+              Row(
+                children: List.generate(5, (i) => Icon(
+                  i < rating ? Icons.star_rounded : Icons.star_border_rounded,
+                  color: i < rating ? AppTheme.warningOrange : Colors.grey.shade300,
+                  size: 24,
+                )),
+              ),
+              const SizedBox(height: 16),
             ],
-          ),
+            // Action buttons
+            if (rating == 0)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    _showRatingDialog(context, item);
+                  },
+                  icon: const Icon(Icons.star_rounded, size: 20),
+                  label: const Text('Beri Rating'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.warningOrange,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            if (rating > 0)
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                  child: const Text('Tutup'),
+                ),
+              ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(width: 90, child: Text(label, style: const TextStyle(fontSize: 12, color: AppTheme.textGrey))),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppTheme.textDark))),
         ],
       ),
     );
+  }
+
+  void _showRatingDialog(BuildContext context, Map<String, dynamic> item) {
+    int selectedRating = 0;
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: const Text('Beri Rating', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(item['bengkel'], style: const TextStyle(fontSize: 14, color: AppTheme.textDark)),
+              Text(item['service'], style: const TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (i) => GestureDetector(
+                  onTap: () => setState(() => selectedRating = i + 1),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Icon(
+                      i < selectedRating ? Icons.star_rounded : Icons.star_border_rounded,
+                      color: i < selectedRating ? AppTheme.warningOrange : Colors.grey.shade300,
+                      size: 36,
+                    ),
+                  ),
+                )),
+              ),
+              const SizedBox(height: 8),
+              if (selectedRating > 0)
+                Text(
+                  _ratingLabel(selectedRating),
+                  style: const TextStyle(fontSize: 12, color: AppTheme.textGrey),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Batal'),
+            ),
+            ElevatedButton(
+              onPressed: selectedRating > 0 ? () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Rating $selectedRating bintang berhasil disimpan'),
+                    backgroundColor: AppTheme.successGreen,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                );
+              } : null,
+              child: const Text('Simpan'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _ratingLabel(int rating) {
+    switch (rating) {
+      case 1: return 'Sangat Buruk';
+      case 2: return 'Buruk';
+      case 3: return 'Cukup';
+      case 4: return 'Bagus';
+      case 5: return 'Sangat Bagus';
+      default: return '';
+    }
   }
 
   void _showOCRSheet(BuildContext context) {
@@ -236,7 +431,6 @@ class HistoryTab extends StatelessWidget {
             const SizedBox(height: 8),
             const Text('Foto struk bengkel, AI akan parsing otomatis', style: TextStyle(fontSize: 13, color: AppTheme.textGrey)),
             const SizedBox(height: 24),
-            // Camera placeholder
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
@@ -305,7 +499,7 @@ class HistoryTab extends StatelessWidget {
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('AI Parsing Berhasil! ✨', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('AI Parsing Berhasil!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     Text('Data berhasil diekstrak dari struk', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
                   ],
                 ),
@@ -326,7 +520,17 @@ class HistoryTab extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () => Navigator.pop(ctx),
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Struk berhasil disimpan ke history'),
+                          backgroundColor: AppTheme.successGreen,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                      );
+                    },
                     child: const Text('Simpan ke History'),
                   ),
                 ),

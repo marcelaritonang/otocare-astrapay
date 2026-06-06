@@ -374,7 +374,7 @@ class _HomeScreen extends StatelessWidget {
             childAspectRatio: 0.78,
             children: [
               _serviceItem(context, Icons.two_wheeler, 'OtoCare', AppTheme.primaryBlue, isNew: true,
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerMain()))),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OtoCareEntry()))),
               _serviceItem(context, Icons.credit_card, 'Angsuran', const Color(0xFF1E88E5)),
               _serviceItem(context, Icons.phone_android, 'Pulsa &\nPaket Data', const Color(0xFF7C4DFF)),
               _serviceItem(context, Icons.bolt, 'PLN', const Color(0xFFFFA726)),
@@ -662,6 +662,146 @@ class _ProfileScreen extends StatelessWidget {
           Expanded(child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.textDark))),
           const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.textGrey),
         ],
+      ),
+    );
+  }
+}
+
+// ==================== OTOCARE ENTRY (Role Selector) ====================
+class OtoCareEntry extends StatelessWidget {
+  const OtoCareEntry({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundWhite,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Back button
+            Align(
+              alignment: Alignment.topLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, top: 8),
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios_new, color: AppTheme.textDark, size: 20),
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+            ),
+            const Spacer(flex: 2),
+            // Logo & Title
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3), blurRadius: 20, offset: const Offset(0, 8)),
+                ],
+              ),
+              child: const Icon(Icons.two_wheeler, color: Colors.white, size: 36),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'OtoCare',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Pilih Profil Anda',
+              style: TextStyle(fontSize: 15, color: AppTheme.textGrey, fontWeight: FontWeight.w400),
+            ),
+            const Spacer(flex: 2),
+            // Role Cards
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  _roleCard(
+                    context,
+                    icon: Icons.two_wheeler,
+                    title: 'Pemilik Kendaraan',
+                    description: 'Cari bengkel terdekat, booking service,\ndan pantau riwayat perawatan motor Anda.',
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const CustomerMain()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  _roleCard(
+                    context,
+                    icon: Icons.build_circle_outlined,
+                    title: 'Pemilik Bengkel',
+                    description: 'Kelola pesanan masuk, atur jadwal,\ndan kembangkan bisnis bengkel UMKM Anda.',
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const UmkmMain()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(flex: 3),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _roleCard(BuildContext context, {required IconData icon, required String title, required String description, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.primaryBlue.withOpacity(0.1), AppTheme.primaryBlue.withOpacity(0.05)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(icon, color: AppTheme.primaryBlue, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                  const SizedBox(height: 4),
+                  Text(description, style: const TextStyle(fontSize: 12, color: AppTheme.textGrey, height: 1.4)),
+                ],
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: AppTheme.textGrey),
+          ],
+        ),
       ),
     );
   }

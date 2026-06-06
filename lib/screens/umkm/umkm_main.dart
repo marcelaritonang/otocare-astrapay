@@ -4,6 +4,7 @@ import 'appointment_tab.dart';
 import 'profile_umkm_tab.dart';
 import 'katalog_tab.dart';
 import 'rating_tab.dart';
+import 'income_tab.dart';
 
 class UmkmMain extends StatefulWidget {
   const UmkmMain({super.key});
@@ -18,8 +19,9 @@ class _UmkmMainState extends State<UmkmMain> {
   final List<Widget> _screens = const [
     AppointmentTab(),
     KatalogTab(),
-    ProfileUmkmTab(),
+    IncomeTab(),
     RatingTab(),
+    ProfileUmkmTab(),
   ];
 
   @override
@@ -46,8 +48,9 @@ class _UmkmMainState extends State<UmkmMain> {
             children: [
               _navItem(0, Icons.calendar_today, 'Booking'),
               _navItem(1, Icons.menu_book, 'Katalog'),
-              _navItem(2, Icons.store, 'Profil'),
+              _navItem(2, Icons.account_balance_wallet, 'Pendapatan'),
               _navItem(3, Icons.star_outline, 'Rating'),
+              _navItem(4, Icons.store, 'Profil'),
             ],
           ),
         ),
@@ -67,7 +70,7 @@ class _UmkmMainState extends State<UmkmMain> {
           Text(
             label,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 10,
               color: isActive ? AppTheme.primaryBlue : AppTheme.textGrey,
               fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
             ),
