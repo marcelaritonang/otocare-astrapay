@@ -315,7 +315,7 @@ class _HomeScreen extends StatelessWidget {
             crossAxisSpacing: 12,
             childAspectRatio: 0.85,
             children: [
-              _serviceItem(context, Icons.two_wheeler, 'OtoCare', AppTheme.primaryBlue, isOtoCare: true),
+              _serviceItem(context, Icons.two_wheeler, 'OtoCare', AppTheme.primaryBlue, isOtoCare: true, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerMain()))),
               _serviceItem(context, Icons.phone_android, 'Pulsa', const Color(0xFF7C4DFF)),
               _serviceItem(context, Icons.bolt, 'PLN', const Color(0xFFFFA726)),
               _serviceItem(context, Icons.water_drop, 'PDAM', const Color(0xFF29B6F6)),
@@ -330,11 +330,9 @@ class _HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _serviceItem(BuildContext context, IconData icon, String label, Color color, {bool isOtoCare = false}) {
+  Widget _serviceItem(BuildContext context, IconData icon, String label, Color color, {bool isOtoCare = false, VoidCallback? onTap}) {
     return GestureDetector(
-      onTap: isOtoCare
-          ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OtoCareRoleSelector()))
-          : null,
+      onTap: onTap,
       child: Column(
         children: [
           Container(
