@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../../theme/app_theme.dart';
 
 class BengkelTab extends StatefulWidget {
@@ -1124,6 +1125,42 @@ class _BookingWizardScreenState extends State<_BookingWizardScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        // Deposit verifikasi
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF8E1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.amber.shade200),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.account_balance_wallet, color: Colors.amber.shade700, size: 20),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Deposit Booking: Rp 10.000', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.amber.shade800)),
+                    const SizedBox(height: 4),
+                    Text('Dipotong dari saldo AstraPay sebagai jaminan kehadiran. Akan dikembalikan 100% saat kamu datang ke bengkel.', style: TextStyle(fontSize: 11, color: Colors.amber.shade700, height: 1.4)),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.info_outline, size: 12, color: Colors.amber.shade600),
+                        const SizedBox(width: 4),
+                        Text('Hangus jika tidak datang tanpa batal 2 jam sebelumnya', style: TextStyle(fontSize: 10, color: Colors.amber.shade600)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Estimasi biaya
         Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
@@ -1139,10 +1176,35 @@ class _BookingWizardScreenState extends State<_BookingWizardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Estimasi Biaya', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                    const Text('Estimasi Biaya Servis', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
                     Text('Rp 75.000 - Rp 150.000', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
                     const SizedBox(height: 2),
                     Text('*Harga final ditentukan setelah inspeksi', style: TextStyle(fontSize: 10, color: AppTheme.textGrey)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        // Info antrian
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppTheme.successGreen.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.successGreen.withOpacity(0.2)),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.people_outline, color: AppTheme.successGreen, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Antrian saat ini: 3 orang', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.successGreen)),
+                    Text('Estimasi posisi kamu: #4', style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
                   ],
                 ),
               ),
@@ -1214,9 +1276,26 @@ class _BookingWizardScreenState extends State<_BookingWizardScreen> {
   }
 
   void _submitBooking() {
+    // Show deposit confirmation first
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => _DepositConfirmSheet(
+        onConfirm: () {
+          Navigator.pop(ctx);
+          _showBookingSuccess();
+        },
+      ),
+    );
+  }
+
+  void _showBookingSuccess() {
+    final bookingCode = 'OTC-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}';
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: false,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
@@ -1232,50 +1311,230 @@ class _BookingWizardScreenState extends State<_BookingWizardScreen> {
             ),
             const SizedBox(height: 16),
             const Text('Appointment Berhasil! 🎉', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
-            const SizedBox(height: 8),
-            Text(
-              '${widget.bengkel['name']}',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.textDark),
-            ),
+            const SizedBox(height: 4),
+            Text(widget.bengkel['name'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.textDark)),
             const SizedBox(height: 4),
             Text(
               '$_selectedService · ${_selectedDate?.day}/${_selectedDate?.month} · $_selectedTime',
               style: const TextStyle(fontSize: 13, color: AppTheme.textGrey),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
+            // QR Code booking
             Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(10)),
-              child: const Text(
-                'Bengkel akan mengonfirmasi appointment Anda. Notifikasi akan dikirim saat dikonfirmasi.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: AppTheme.textGrey, height: 1.4),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Column(
+                children: [
+                  const Text('Tunjukkan QR ini ke bengkel', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: 160, height: 160,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: QrImageView(
+                      data: '{"code":"$bookingCode","bengkel":"${widget.bengkel['name']}","service":"$_selectedService","date":"${_selectedDate?.day}/${_selectedDate?.month}/${_selectedDate?.year}","time":"$_selectedTime"}',
+                      version: QrVersions.auto,
+                      size: 144,
+                      eyeStyle: const QrEyeStyle(eyeShape: QrEyeShape.square, color: Color(0xFF003B8F)),
+                      dataModuleStyle: const QrDataModuleStyle(dataModuleShape: QrDataModuleShape.square, color: Color(0xFF003B8F)),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(6)),
+                    child: Text(bookingCode, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textDark, letterSpacing: 1.2)),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            // Status info
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: const Color(0xFFF0F7FF), borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.orange, shape: BoxShape.circle)),
+                      const SizedBox(width: 8),
+                      const Text('Menunggu konfirmasi bengkel', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.textDark)),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text('Deposit Rp 10.000 telah dipotong. Dikembalikan saat check-in di bengkel.', style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
+              child: ElevatedButton(
                 onPressed: () { Navigator.pop(ctx); Navigator.pop(context); Navigator.pop(context); },
-                icon: const Icon(Icons.qr_code, size: 18),
-                label: const Text('Bayar via AstraPay'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryBlue,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
+                child: const Text('Lihat Booking Saya', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
               ),
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () { Navigator.pop(ctx); Navigator.pop(context); Navigator.pop(context); },
-              child: const Text('Kembali ke Beranda', style: TextStyle(color: AppTheme.textGrey)),
             ),
             const SizedBox(height: 8),
           ],
         ),
       ),
+    );
+  }
+}
+
+// ==========================================
+// DEPOSIT CONFIRMATION BOTTOM SHEET
+// ==========================================
+class _DepositConfirmSheet extends StatefulWidget {
+  final VoidCallback onConfirm;
+  const _DepositConfirmSheet({required this.onConfirm});
+
+  @override
+  State<_DepositConfirmSheet> createState() => _DepositConfirmSheetState();
+}
+
+class _DepositConfirmSheetState extends State<_DepositConfirmSheet> {
+  bool _agreed = false;
+  bool _processing = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Container(
+                width: 48, height: 48,
+                decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                child: const Icon(Icons.account_balance_wallet, color: AppTheme.primaryBlue, size: 24),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Konfirmasi Deposit', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+                    Text('Jaminan kehadiran appointment', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(12)),
+            child: Column(
+              children: [
+                _depositRow('Deposit booking', 'Rp 10.000'),
+                const SizedBox(height: 8),
+                Divider(color: Colors.grey.shade200),
+                const SizedBox(height: 8),
+                _depositRow('Saldo AstraPay', 'Rp 250.000', isBalance: true),
+                const SizedBox(height: 8),
+                _depositRow('Sisa setelah deposit', 'Rp 240.000'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: const Color(0xFFF0FFF4), borderRadius: BorderRadius.circular(10), border: Border.all(color: AppTheme.successGreen.withOpacity(0.2))),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.shield_outlined, color: AppTheme.successGreen, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Deposit dikembalikan 100% saat kamu check-in di bengkel dengan QR code',
+                    style: TextStyle(fontSize: 11, color: AppTheme.successGreen, height: 1.4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          GestureDetector(
+            onTap: () => setState(() => _agreed = !_agreed),
+            child: Row(
+              children: [
+                Container(
+                  width: 22, height: 22,
+                  decoration: BoxDecoration(
+                    color: _agreed ? AppTheme.primaryBlue : Colors.transparent,
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: _agreed ? AppTheme.primaryBlue : Colors.grey.shade400, width: 2),
+                  ),
+                  child: _agreed ? const Icon(Icons.check, color: Colors.white, size: 14) : null,
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Text(
+                    'Saya setuju deposit Rp 10.000 dipotong dari saldo AstraPay. Deposit hangus jika tidak hadir tanpa batal 2 jam sebelumnya.',
+                    style: TextStyle(fontSize: 11, color: AppTheme.textGrey, height: 1.3),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _agreed && !_processing ? () async {
+                setState(() => _processing = true);
+                await Future.delayed(const Duration(milliseconds: 1500));
+                widget.onConfirm();
+              } : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _agreed ? AppTheme.primaryBlue : Colors.grey.shade300,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: _processing
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Text('Bayar Deposit & Booking', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal', style: TextStyle(color: AppTheme.textGrey)),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _depositRow(String label, String value, {bool isBalance = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(fontSize: 13, color: isBalance ? AppTheme.textDark : AppTheme.textGrey)),
+        Text(value, style: TextStyle(fontSize: 13, fontWeight: isBalance ? FontWeight.w600 : FontWeight.w500, color: AppTheme.textDark)),
+      ],
     );
   }
 }
