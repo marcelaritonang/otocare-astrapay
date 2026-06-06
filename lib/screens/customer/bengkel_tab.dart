@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../theme/app_theme.dart';
+import 'chat_screen.dart';
 
 class BengkelTab extends StatefulWidget {
   const BengkelTab({super.key});
@@ -544,6 +545,11 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
             children: [
               IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
               Expanded(child: Text(bengkel['name'], style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600))),
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(bengkelName: bengkel['name']))),
+                child: const Icon(Icons.chat_bubble_outline, color: Colors.white),
+              ),
+              const SizedBox(width: 12),
               const Icon(Icons.favorite_border, color: Colors.white),
               const SizedBox(width: 12),
               const Icon(Icons.share, color: Colors.white),

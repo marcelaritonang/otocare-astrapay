@@ -3,6 +3,10 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' hide Path;
 import '../../theme/app_theme.dart';
 import 'bengkel_tab.dart';
+import 'health_score_screen.dart';
+import 'sos_screen.dart';
+import 'rewards_screen.dart';
+import 'ai_assistant_screen.dart';
 
 class HomeTab extends StatelessWidget {
   final Function(int)? onTabSwitch;
@@ -19,12 +23,20 @@ class HomeTab extends StatelessWidget {
             _buildHeader(context),
             const SizedBox(height: 16),
             _buildVehicleCard(context),
+            const SizedBox(height: 14),
+            _buildHealthScoreCard(context),
+            const SizedBox(height: 14),
+            _buildSOSButton(context),
             const SizedBox(height: 16),
             _buildServiceReminder(context),
             const SizedBox(height: 20),
             _buildQuickActions(context),
             const SizedBox(height: 20),
             _buildNearbyBengkel(context),
+            const SizedBox(height: 20),
+            _buildRewardsCard(context),
+            const SizedBox(height: 20),
+            _buildAITipsCard(context),
             const SizedBox(height: 20),
             _buildPromoSection(),
             const SizedBox(height: 24),
@@ -201,6 +213,119 @@ class HomeTab extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => const _EditVehicleSheet(),
+    );
+  }
+
+  Widget _buildHealthScoreCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HealthScoreScreen())),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppTheme.primaryBlue.withOpacity(0.04), const Color(0xFFF59E0B).withOpacity(0.04)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.2)),
+          ),
+          child: Row(
+            children: [
+              // Mini gauge
+              SizedBox(
+                width: 48, height: 48,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 48, height: 48,
+                      child: CircularProgressIndicator(
+                        value: 0.72,
+                        strokeWidth: 5,
+                        backgroundColor: const Color(0xFFF1F3F8),
+                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF59E0B)),
+                      ),
+                    ),
+                    const Text('72', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppTheme.textDark)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Kesehatan Motor', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                    const SizedBox(height: 2),
+                    Text('⚠️ Oli mesin perlu diganti segera', style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.primaryBlue),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSOSButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SOSScreen())),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFDC2626), Color(0xFFEF4444)],
+            ),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: [BoxShadow(color: const Color(0xFFDC2626).withOpacity(0.25), blurRadius: 12, offset: const Offset(0, 4))],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40, height: 40,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.warning_rounded, color: Colors.white, size: 22),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('SOS Darurat Mogok', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+                    SizedBox(height: 2),
+                    Text('Panggil mekanik ke lokasimu', style: TextStyle(fontSize: 11, color: Colors.white70)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -649,6 +774,147 @@ class HomeTab extends StatelessWidget {
               child: const Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.primaryBlue, size: 14),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRewardsCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RewardsScreen())),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [const Color(0xFFF59E0B).withOpacity(0.08), const Color(0xFFFFD700).withOpacity(0.05)],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFF59E0B).withOpacity(0.2)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 48, height: 48,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF59E0B).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(child: Text('🏆', style: TextStyle(fontSize: 22))),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Row(
+                      children: [
+                        Text('OtoCare Points', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+                        SizedBox(width: 8),
+                        Text('🔥 3 bulan streak!', style: TextStyle(fontSize: 11)),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Text('2.350 pts', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFFF59E0B))),
+                        const SizedBox(width: 8),
+                        Text('• Silver 🥈', style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFFF59E0B)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAITipsCard(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AIAssistantScreen())),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppTheme.primaryBlue.withOpacity(0.06), const Color(0xFF7C4DFF).withOpacity(0.04)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.15)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('OtoCare AI Assistant', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
+                        Text('Prediksi & tips perawatan cerdas', style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.primaryBlue),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Row(
+                  children: [
+                    Text('💡', style: TextStyle(fontSize: 16)),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Tips: Ganti oli tepat waktu bisa perpanjang umur mesin hingga 30%!',
+                        style: TextStyle(fontSize: 12, color: AppTheme.textDark, height: 1.3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
