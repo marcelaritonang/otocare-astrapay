@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../theme/app_theme.dart';
 import 'bengkel_tab.dart';
 
@@ -271,40 +273,31 @@ class HomeTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          // Map placeholder
-          Container(
-            height: 140,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(14),
-              image: const DecorationImage(
-                image: NetworkImage('https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/106.845,-6.208,13,0/400x200?access_token=placeholder'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: AppTheme.primaryBlue.withOpacity(0.05),
-                  ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.map, size: 40, color: AppTheme.primaryBlue.withOpacity(0.5)),
-                        const SizedBox(height: 4),
-                        Text('Peta Bengkel Sekitar', style: TextStyle(fontSize: 12, color: AppTheme.primaryBlue.withOpacity(0.7))),
-                      ],
-                    ),
-                  ),
+          // Real Map with OpenStreetMap
+          ClipRRect(
+            borderRadius: BorderRadius.circular(14),
+            child: SizedBox(
+              height: 140,
+              child: FlutterMap(
+                options: MapOptions(
+                  initialCenter: LatLng(-6.9175, 107.6191), // Bandung
+                  initialZoom: 13.0,
                 ),
-                // Fake pins
-                Positioned(top: 30, left: 80, child: Icon(Icons.location_on, color: Colors.red.shade700, size: 24)),
-                Positioned(top: 50, right: 60, child: Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 24)),
-                Positioned(bottom: 40, left: 150, child: Icon(Icons.location_on, color: AppTheme.successGreen, size: 24)),
-              ],
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.otocare.astrapay',
+                  ),
+                  MarkerLayer(
+                    markers: [
+                      Marker(point: LatLng(-6.9175, 107.6191), width: 30, height: 30, child: Icon(Icons.my_location, color: AppTheme.primaryBlue, size: 24)),
+                      Marker(point: LatLng(-6.9210, 107.6250), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.red.shade700, size: 28)),
+                      Marker(point: LatLng(-6.9140, 107.6130), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.successGreen, size: 28)),
+                      Marker(point: LatLng(-6.9200, 107.6100), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.warningOrange, size: 28)),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 12),

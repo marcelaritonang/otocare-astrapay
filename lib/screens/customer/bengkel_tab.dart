@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../theme/app_theme.dart';
 
 class BengkelTab extends StatefulWidget {
@@ -196,32 +198,32 @@ class _BengkelTabState extends State<BengkelTab> {
           height: 120,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            color: const Color(0xFFE8F4E8),
             border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.2)),
           ),
           child: Stack(
             children: [
-              // Simulated map background with grid lines
-              CustomPaint(painter: _MapGridPainter(), child: Container()),
-              // Pin markers
-              Positioned(top: 25, left: 60, child: _mapPin(Colors.red)),
-              Positioned(top: 45, left: 140, child: _mapPin(AppTheme.primaryBlue)),
-              Positioned(top: 35, right: 80, child: _mapPin(AppTheme.successGreen)),
-              Positioned(bottom: 30, left: 100, child: _mapPin(AppTheme.warningOrange)),
-              Positioned(bottom: 25, right: 50, child: _mapPin(Colors.purple)),
-              // Center user location
-              Positioned(
-                top: 50, left: 0, right: 0,
-                child: Center(
-                  child: Container(
-                    width: 16, height: 16,
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
-                      boxShadow: [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3), blurRadius: 8)],
-                    ),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(14),
+                child: FlutterMap(
+                  options: MapOptions(
+                    initialCenter: LatLng(-6.9175, 107.6191),
+                    initialZoom: 13.0,
                   ),
+                  children: [
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.otocare.astrapay',
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(point: LatLng(-6.9175, 107.6191), width: 20, height: 20, child: Container(width: 16, height: 16, decoration: BoxDecoration(color: AppTheme.primaryBlue, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3), boxShadow: [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3), blurRadius: 8)]))),
+                        Marker(point: LatLng(-6.9210, 107.6250), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.red.shade700, size: 24)),
+                        Marker(point: LatLng(-6.9140, 107.6130), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.successGreen, size: 24)),
+                        Marker(point: LatLng(-6.9200, 107.6100), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.warningOrange, size: 24)),
+                        Marker(point: LatLng(-6.9120, 107.6220), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.purple, size: 24)),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               // Label
@@ -377,32 +379,17 @@ class _BengkelTabState extends State<BengkelTab> {
   }
 }
 
-class _MapGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.green.withOpacity(0.15)
-      ..strokeWidth = 0.5;
-    for (double i = 0; i < size.width; i += 30) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    for (double i = 0; i < size.height; i += 30) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
-    // Roads
-    final roadPaint = Paint()..color = Colors.white.withOpacity(0.7)..strokeWidth = 3;
-    canvas.drawLine(Offset(0, size.height * 0.4), Offset(size.width, size.height * 0.5), roadPaint);
-    canvas.drawLine(Offset(size.width * 0.3, 0), Offset(size.width * 0.4, size.height), roadPaint);
-    canvas.drawLine(Offset(size.width * 0.7, 0), Offset(size.width * 0.65, size.height), roadPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
 class _FullMapScreen extends StatelessWidget {
   final List<Map<String, dynamic>> bengkelList;
   const _FullMapScreen({required this.bengkelList});
+
+  static const List<LatLng> _bengkelCoords = [
+    LatLng(-6.9210, 107.6250),
+    LatLng(-6.9140, 107.6130),
+    LatLng(-6.9200, 107.6100),
+    LatLng(-6.9120, 107.6220),
+    LatLng(-6.9250, 107.6180),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -412,41 +399,49 @@ class _FullMapScreen extends StatelessWidget {
         backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
       ),
-      body: Stack(
+      body: FlutterMap(
+        options: MapOptions(
+          initialCenter: LatLng(-6.9175, 107.6191),
+          initialZoom: 14.0,
+        ),
         children: [
-          Container(
-            color: const Color(0xFFE8F4E8),
-            child: CustomPaint(painter: _MapGridPainter(), child: Container()),
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.otocare.astrapay',
           ),
-          // Pins
-          ...List.generate(bengkelList.length, (i) {
-            final top = 80.0 + (i * 90);
-            final left = 40.0 + (i * 50) % 200;
-            return Positioned(
-              top: top, left: left,
-              child: Column(
-                children: [
-                  const Icon(Icons.location_on, color: Colors.red, size: 32),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]),
-                    child: Text(bengkelList[i]['name'], style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w500)),
+          MarkerLayer(
+            markers: [
+              // User location
+              Marker(
+                point: LatLng(-6.9175, 107.6191),
+                width: 24, height: 24,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 4),
+                    boxShadow: [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3), blurRadius: 12)],
                   ),
-                ],
+                ),
               ),
-            );
-          }),
-          // User location
-          Center(
-            child: Container(
-              width: 20, height: 20,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue,
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 4),
-                boxShadow: [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3), blurRadius: 12)],
-              ),
-            ),
+              // Bengkel markers
+              ...List.generate(bengkelList.length.clamp(0, _bengkelCoords.length), (i) {
+                return Marker(
+                  point: _bengkelCoords[i],
+                  width: 120, height: 50,
+                  child: Column(
+                    children: [
+                      Icon(Icons.location_on, color: Colors.red.shade700, size: 28),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(4), boxShadow: [const BoxShadow(color: Colors.black12, blurRadius: 4)]),
+                        child: Text(bengkelList[i]['name'], style: const TextStyle(fontSize: 8, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
           ),
         ],
       ),
