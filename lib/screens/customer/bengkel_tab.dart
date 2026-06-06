@@ -498,12 +498,6 @@ class BengkelDetailScreen extends StatefulWidget {
 }
 
 class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
-  String? _selectedService;
-  DateTime? _selectedDate;
-  String? _selectedTime;
-
-  final List<String> _timeSlots = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
-
   void _openWhatsApp(String phone, String bengkelName) async {
     final message = Uri.encodeComponent('Halo $bengkelName, saya ingin booking service via OtoCare. Apakah tersedia slot hari ini?');
     final url = Uri.parse('https://wa.me/$phone?text=$message');
@@ -530,19 +524,13 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
                     const SizedBox(height: 16),
                     _buildInfoSection(bengkel),
                     const SizedBox(height: 20),
-                    _buildServiceSelection(bengkel),
-                    const SizedBox(height: 20),
-                    _buildDateSelection(),
-                    const SizedBox(height: 16),
-                    _buildTimeSelection(),
-                    const SizedBox(height: 16),
-                    _buildCostEstimate(),
+                    _buildServicesOverview(bengkel),
                     const SizedBox(height: 80),
                   ],
                 ),
               ),
             ),
-            _buildBookingButton(),
+            _buildBookingCTA(bengkel),
           ],
         ),
       ),
@@ -661,139 +649,37 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
     );
   }
 
-  Widget _buildServiceSelection(Map<String, dynamic> bengkel) {
+  Widget _buildServicesOverview(Map<String, dynamic> bengkel) {
     final services = bengkel['services'] as List<String>;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Pilih Layanan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-        const SizedBox(height: 10),
-        ...services.map((s) => GestureDetector(
-          onTap: () => setState(() => _selectedService = s),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: _selectedService == s ? AppTheme.primaryBlue.withOpacity(0.05) : Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: _selectedService == s ? AppTheme.primaryBlue : Colors.grey.shade200),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 36, height: 36,
-                  decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                  child: Icon(Icons.build, color: AppTheme.primaryBlue, size: 18),
-                ),
-                const SizedBox(width: 12),
-                Expanded(child: Text(s, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500))),
-                if (_selectedService == s) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20),
-              ],
-            ),
-          ),
-        )),
-      ],
-    );
-  }
-
-  Widget _buildDateSelection() {
-    final now = DateTime.now();
-    final dates = List.generate(7, (i) => now.add(Duration(days: i + 1)));
-    final days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Pilih Tanggal', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-        const SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: dates.map((d) {
-              final isSelected = _selectedDate == d;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedDate = d),
-                child: Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppTheme.primaryBlue : Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: isSelected ? AppTheme.primaryBlue : Colors.grey.shade200),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(days[d.weekday - 1], style: TextStyle(fontSize: 11, color: isSelected ? Colors.white : AppTheme.textGrey)),
-                      const SizedBox(height: 4),
-                      Text('${d.day}', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : AppTheme.textDark)),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTimeSelection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text('Pilih Waktu', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+        const Text('Layanan Tersedia', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
         const SizedBox(height: 10),
         Wrap(
           spacing: 8, runSpacing: 8,
-          children: _timeSlots.map((t) {
-            final isSelected = _selectedTime == t;
-            return GestureDetector(
-              onTap: () => setState(() => _selectedTime = t),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppTheme.primaryBlue : Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: isSelected ? AppTheme.primaryBlue : Colors.grey.shade200),
-                ),
-                child: Text(t, style: TextStyle(fontSize: 13, color: isSelected ? Colors.white : AppTheme.textDark, fontWeight: FontWeight.w500)),
-              ),
-            );
-          }).toList(),
+          children: services.map((s) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryBlue.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.15)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.check_circle_outline, color: AppTheme.primaryBlue, size: 14),
+                const SizedBox(width: 6),
+                Text(s, style: TextStyle(fontSize: 12, color: AppTheme.primaryBlue, fontWeight: FontWeight.w500)),
+              ],
+            ),
+          )).toList(),
         ),
       ],
     );
   }
 
-  Widget _buildCostEstimate() {
-    if (_selectedService == null) return const SizedBox.shrink();
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.info_outline, color: AppTheme.primaryBlue, size: 18),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Estimasi Biaya', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
-                Text('Rp 75.000 - Rp 150.000', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBookingButton() {
-    final canBook = _selectedService != null && _selectedDate != null && _selectedTime != null;
+  Widget _buildBookingCTA(Map<String, dynamic> bengkel) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -802,25 +688,535 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
       ),
       child: SizedBox(
         width: double.infinity,
-        child: ElevatedButton(
-          onPressed: canBook ? () => _confirmBooking() : null,
+        child: ElevatedButton.icon(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => _BookingWizardScreen(bengkel: bengkel)),
+          ),
+          icon: const Icon(Icons.calendar_today, size: 18),
+          label: const Text('Buat Appointment', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
           style: ElevatedButton.styleFrom(
-            backgroundColor: canBook ? AppTheme.primaryBlue : Colors.grey.shade300,
+            backgroundColor: AppTheme.primaryBlue,
+            foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          ),
-          child: Text(
-            canBook ? 'Booking Sekarang' : 'Pilih layanan, tanggal & waktu',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: canBook ? Colors.white : AppTheme.textGrey),
           ),
         ),
       ),
     );
   }
+}
 
-  void _confirmBooking() {
+// ==========================================
+// BOOKING WIZARD (Step-by-step like iColour)
+// ==========================================
+class _BookingWizardScreen extends StatefulWidget {
+  final Map<String, dynamic> bengkel;
+  const _BookingWizardScreen({required this.bengkel});
+
+  @override
+  State<_BookingWizardScreen> createState() => _BookingWizardScreenState();
+}
+
+class _BookingWizardScreenState extends State<_BookingWizardScreen> {
+  int _currentStep = 0;
+  String? _selectedService;
+  DateTime? _selectedDate;
+  String? _selectedTime;
+  String _notes = '';
+
+  final List<String> _timeSlots = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
+  final List<String> _stepTitles = ['Layanan', 'Tanggal', 'Waktu', 'Konfirmasi'];
+
+  bool get _canNext {
+    switch (_currentStep) {
+      case 0: return _selectedService != null;
+      case 1: return _selectedDate != null;
+      case 2: return _selectedTime != null;
+      default: return true;
+    }
+  }
+
+  void _next() {
+    if (_currentStep < 3) {
+      setState(() => _currentStep++);
+    } else {
+      _submitBooking();
+    }
+  }
+
+  void _back() {
+    if (_currentStep > 0) {
+      setState(() => _currentStep--);
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF7F8FC),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20, color: AppTheme.textDark),
+          onPressed: _back,
+        ),
+        title: Text('Buat Appointment', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          _buildStepIndicator(),
+          Expanded(child: _buildStepContent()),
+          _buildBottomBar(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStepIndicator() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      color: Colors.white,
+      child: Column(
+        children: [
+          Row(
+            children: List.generate(4, (i) {
+              final isActive = i <= _currentStep;
+              final isDone = i < _currentStep;
+              return Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28, height: 28,
+                      decoration: BoxDecoration(
+                        color: isDone ? AppTheme.successGreen : (isActive ? AppTheme.primaryBlue : Colors.grey.shade200),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: isDone
+                          ? const Icon(Icons.check, color: Colors.white, size: 14)
+                          : Text('${i + 1}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: isActive ? Colors.white : AppTheme.textGrey)),
+                      ),
+                    ),
+                    if (i < 3) Expanded(
+                      child: Container(
+                        height: 2,
+                        color: i < _currentStep ? AppTheme.successGreen : Colors.grey.shade200,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: _stepTitles.asMap().entries.map((e) {
+              final isActive = e.key <= _currentStep;
+              return Expanded(
+                child: Text(
+                  e.value,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 10, color: isActive ? AppTheme.primaryBlue : AppTheme.textGrey, fontWeight: isActive ? FontWeight.w600 : FontWeight.normal),
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStepContent() {
+    switch (_currentStep) {
+      case 0: return _stepService();
+      case 1: return _stepDate();
+      case 2: return _stepTime();
+      case 3: return _stepConfirm();
+      default: return const SizedBox.shrink();
+    }
+  }
+
+  // Step 1: Pilih Layanan
+  Widget _stepService() {
+    final services = widget.bengkel['services'] as List<String>;
+    final serviceIcons = {
+      'Ganti Oli': Icons.water_drop,
+      'Tune Up': Icons.settings,
+      'Injeksi': Icons.speed,
+      'CVT': Icons.settings_applications,
+      'V-Belt': Icons.link,
+      'Bore Up': Icons.rocket_launch,
+      'Overhaul': Icons.engineering,
+      'Kopling': Icons.disc_full,
+      'Rem': Icons.do_not_disturb_on,
+      'Rantai': Icons.link,
+      'Servis Berkala': Icons.event_repeat,
+      'Elektrikal': Icons.electrical_services,
+      'Oli': Icons.water_drop,
+    };
+    final servicePrices = {
+      'Ganti Oli': 'Rp 75.000 - 120.000',
+      'Tune Up': 'Rp 100.000 - 200.000',
+      'Injeksi': 'Rp 50.000 - 150.000',
+      'CVT': 'Rp 150.000 - 350.000',
+      'V-Belt': 'Rp 200.000 - 400.000',
+      'Bore Up': 'Rp 500.000 - 1.500.000',
+      'Overhaul': 'Rp 300.000 - 800.000',
+      'Kopling': 'Rp 100.000 - 250.000',
+      'Rem': 'Rp 80.000 - 180.000',
+      'Rantai': 'Rp 100.000 - 200.000',
+      'Servis Berkala': 'Rp 100.000 - 250.000',
+      'Elektrikal': 'Rp 50.000 - 300.000',
+      'Oli': 'Rp 75.000 - 120.000',
+    };
+
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text('Pilih layanan yang kamu butuhkan', style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+        const SizedBox(height: 16),
+        ...services.map((s) {
+          final isSelected = _selectedService == s;
+          final icon = serviceIcons.entries.firstWhere((e) => s.contains(e.key), orElse: () => MapEntry('', Icons.build)).value;
+          final price = servicePrices.entries.firstWhere((e) => s.contains(e.key), orElse: () => MapEntry('', 'Rp 50.000 - 200.000')).value;
+          return GestureDetector(
+            onTap: () => setState(() => _selectedService = s),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isSelected ? AppTheme.primaryBlue.withOpacity(0.05) : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: isSelected ? AppTheme.primaryBlue : Colors.grey.shade200, width: isSelected ? 2 : 1),
+                boxShadow: isSelected ? [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.1), blurRadius: 8)] : null,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppTheme.primaryBlue.withOpacity(0.15) : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    child: Icon(icon, color: isSelected ? AppTheme.primaryBlue : AppTheme.textGrey, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isSelected ? AppTheme.primaryBlue : AppTheme.textDark)),
+                        const SizedBox(height: 4),
+                        Text(price, style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                      ],
+                    ),
+                  ),
+                  if (isSelected)
+                    Container(
+                      width: 24, height: 24,
+                      decoration: const BoxDecoration(color: AppTheme.primaryBlue, shape: BoxShape.circle),
+                      child: const Icon(Icons.check, color: Colors.white, size: 14),
+                    )
+                  else
+                    Container(
+                      width: 24, height: 24,
+                      decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.grey.shade300, width: 2)),
+                    ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  // Step 2: Pilih Tanggal
+  Widget _stepDate() {
+    final now = DateTime.now();
+    final dates = List.generate(14, (i) => now.add(Duration(days: i + 1)));
+    final days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text('Pilih tanggal appointment', style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${months[now.month - 1]} ${now.year}', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+              const SizedBox(height: 16),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 7, mainAxisSpacing: 8, crossAxisSpacing: 8),
+                itemCount: dates.length,
+                itemBuilder: (ctx, i) {
+                  final d = dates[i];
+                  final isSelected = _selectedDate != null && _selectedDate!.day == d.day && _selectedDate!.month == d.month;
+                  final isSunday = d.weekday == 7;
+                  return GestureDetector(
+                    onTap: isSunday ? null : () => setState(() => _selectedDate = d),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppTheme.primaryBlue : (isSunday ? Colors.grey.shade100 : Colors.transparent),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(days[d.weekday - 1], style: TextStyle(fontSize: 9, color: isSelected ? Colors.white70 : (isSunday ? Colors.grey.shade400 : AppTheme.textGrey))),
+                          const SizedBox(height: 2),
+                          Text('${d.day}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: isSelected ? Colors.white : (isSunday ? Colors.grey.shade400 : AppTheme.textDark))),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        if (_selectedDate != null) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.05), borderRadius: BorderRadius.circular(10)),
+            child: Row(
+              children: [
+                const Icon(Icons.event, color: AppTheme.primaryBlue, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  '${days[_selectedDate!.weekday - 1]}, ${_selectedDate!.day} ${months[_selectedDate!.month - 1]} ${_selectedDate!.year}',
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  // Step 3: Pilih Waktu
+  Widget _stepTime() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text('Pilih waktu yang tersedia', style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+        const SizedBox(height: 6),
+        Text('Durasi estimasi: 30 - 60 menit', style: TextStyle(fontSize: 12, color: AppTheme.textGrey.withOpacity(0.7))),
+        const SizedBox(height: 20),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Pagi', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10, runSpacing: 10,
+                children: _timeSlots.sublist(0, 4).map((t) => _timeChip(t)).toList(),
+              ),
+              const SizedBox(height: 20),
+              const Text('Siang', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 10, runSpacing: 10,
+                children: _timeSlots.sublist(4).map((t) => _timeChip(t)).toList(),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+        const Text('Catatan (opsional)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+        const SizedBox(height: 8),
+        TextField(
+          onChanged: (v) => _notes = v,
+          maxLines: 3,
+          decoration: InputDecoration(
+            hintText: 'Keluhan atau permintaan khusus...',
+            hintStyle: TextStyle(fontSize: 13, color: Colors.grey.shade400),
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade200)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryBlue)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _timeChip(String time) {
+    final isSelected = _selectedTime == time;
+    final isUnavailable = time == '11:00'; // simulate one slot taken
+    return GestureDetector(
+      onTap: isUnavailable ? null : () => setState(() => _selectedTime = time),
+      child: Container(
+        width: 72,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: isUnavailable ? Colors.grey.shade100 : (isSelected ? AppTheme.primaryBlue : Colors.white),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: isUnavailable ? Colors.grey.shade200 : (isSelected ? AppTheme.primaryBlue : Colors.grey.shade200),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(time, style: TextStyle(
+              fontSize: 14, fontWeight: FontWeight.w600,
+              color: isUnavailable ? Colors.grey.shade400 : (isSelected ? Colors.white : AppTheme.textDark),
+            )),
+            if (isUnavailable) Text('Penuh', style: TextStyle(fontSize: 9, color: Colors.grey.shade400)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Step 4: Konfirmasi
+  Widget _stepConfirm() {
+    final bengkel = widget.bengkel;
+    final days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    final dateStr = _selectedDate != null
+      ? '${days[_selectedDate!.weekday - 1]}, ${_selectedDate!.day} ${months[_selectedDate!.month - 1]} ${_selectedDate!.year}'
+      : '-';
+
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const Text('Periksa detail appointment kamu', style: TextStyle(fontSize: 14, color: AppTheme.textGrey)),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)]),
+          child: Column(
+            children: [
+              _confirmRow(Icons.store, 'Bengkel', bengkel['name']),
+              _divider(),
+              _confirmRow(Icons.build, 'Layanan', _selectedService ?? '-'),
+              _divider(),
+              _confirmRow(Icons.calendar_today, 'Tanggal', dateStr),
+              _divider(),
+              _confirmRow(Icons.access_time, 'Waktu', _selectedTime ?? '-'),
+              if (_notes.isNotEmpty) ...[
+                _divider(),
+                _confirmRow(Icons.note, 'Catatan', _notes),
+              ],
+              _divider(),
+              _confirmRow(Icons.payments, 'Pembayaran', 'QRIS AstraPay'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryBlue.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.2)),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.info_outline, color: AppTheme.primaryBlue, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Estimasi Biaya', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                    Text('Rp 75.000 - Rp 150.000', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
+                    const SizedBox(height: 2),
+                    Text('*Harga final ditentukan setelah inspeksi', style: TextStyle(fontSize: 10, color: AppTheme.textGrey)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _confirmRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.primaryBlue, size: 18),
+          const SizedBox(width: 12),
+          SizedBox(width: 70, child: Text(label, style: const TextStyle(fontSize: 12, color: AppTheme.textGrey))),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppTheme.textDark))),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() => Divider(height: 1, color: Colors.grey.shade100);
+
+  Widget _buildBottomBar() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10, offset: const Offset(0, -4))],
+      ),
+      child: Row(
+        children: [
+          if (_currentStep > 0)
+            Expanded(
+              flex: 1,
+              child: OutlinedButton(
+                onPressed: _back,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  side: BorderSide(color: Colors.grey.shade300),
+                ),
+                child: const Text('Kembali', style: TextStyle(color: AppTheme.textDark)),
+              ),
+            ),
+          if (_currentStep > 0) const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: ElevatedButton(
+              onPressed: _canNext ? _next : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _canNext ? AppTheme.primaryBlue : Colors.grey.shade300,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: Text(
+                _currentStep == 3 ? 'Konfirmasi Booking' : 'Lanjut',
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _submitBooking() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Container(
         padding: const EdgeInsets.all(24),
@@ -828,42 +1224,55 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Container(
-              width: 72, height: 72,
+              width: 80, height: 80,
               decoration: BoxDecoration(color: AppTheme.successGreen.withOpacity(0.1), shape: BoxShape.circle),
-              child: const Icon(Icons.check_circle, color: AppTheme.successGreen, size: 48),
+              child: const Icon(Icons.check_circle, color: AppTheme.successGreen, size: 52),
             ),
             const SizedBox(height: 16),
-            const Text('Booking Berhasil! 🎉', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const Text('Appointment Berhasil! 🎉', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
             const SizedBox(height: 8),
             Text(
-              '${widget.bengkel['name']}\n$_selectedService · ${_selectedDate?.day}/${_selectedDate?.month} · $_selectedTime',
-              textAlign: TextAlign.center,
+              '${widget.bengkel['name']}',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: AppTheme.textDark),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '$_selectedService · ${_selectedDate?.day}/${_selectedDate?.month} · $_selectedTime',
               style: const TextStyle(fontSize: 13, color: AppTheme.textGrey),
             ),
-            const SizedBox(height: 8),
-            const Text('Bengkel akan konfirmasi & kirim estimasi biaya.', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () { Navigator.pop(ctx); Navigator.pop(context); },
-                    child: const Text('Kembali'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () { Navigator.pop(ctx); Navigator.pop(context); },
-                    icon: const Icon(Icons.qr_code, size: 16),
-                    label: const Text('Bayar via AstraPay'),
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(10)),
+              child: const Text(
+                'Bengkel akan mengonfirmasi appointment Anda. Notifikasi akan dikirim saat dikonfirmasi.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: AppTheme.textGrey, height: 1.4),
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () { Navigator.pop(ctx); Navigator.pop(context); Navigator.pop(context); },
+                icon: const Icon(Icons.qr_code, size: 18),
+                label: const Text('Bayar via AstraPay'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryBlue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
+              onPressed: () { Navigator.pop(ctx); Navigator.pop(context); Navigator.pop(context); },
+              child: const Text('Kembali ke Beranda', style: TextStyle(color: AppTheme.textGrey)),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
