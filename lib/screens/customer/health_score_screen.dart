@@ -119,14 +119,14 @@ class HealthScoreScreen extends StatelessWidget {
               color: AppTheme.primaryBlue.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.auto_awesome, color: AppTheme.primaryBlue, size: 20),
+            child: const Icon(Icons.info_outline, color: AppTheme.primaryBlue, size: 20),
           ),
           const SizedBox(width: 12),
           const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Rekomendasi AI', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
+                Text('Peringatan Service', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
                 SizedBox(height: 4),
                 Text(
                   'Segera ganti oli mesin. Motor Anda sudah melewati batas 5.000 km sejak penggantian terakhir.',

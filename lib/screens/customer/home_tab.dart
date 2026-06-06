@@ -6,7 +6,6 @@ import 'bengkel_tab.dart';
 import 'health_score_screen.dart';
 import 'sos_screen.dart';
 import 'rewards_screen.dart';
-import 'ai_assistant_screen.dart';
 
 class HomeTab extends StatelessWidget {
   final Function(int)? onTabSwitch;
@@ -35,8 +34,6 @@ class HomeTab extends StatelessWidget {
             _buildNearbyBengkel(context),
             const SizedBox(height: 20),
             _buildRewardsCard(context),
-            const SizedBox(height: 20),
-            _buildAITipsCard(context),
             const SizedBox(height: 20),
             _buildPromoSection(),
             const SizedBox(height: 24),
@@ -835,83 +832,6 @@ class HomeTab extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(Icons.arrow_forward_ios, size: 14, color: Color(0xFFF59E0B)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAITipsCard(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: GestureDetector(
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AIAssistantScreen())),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppTheme.primaryBlue.withOpacity(0.06), const Color(0xFF7C4DFF).withOpacity(0.04)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.15)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 36, height: 36,
-                    decoration: BoxDecoration(
-                      gradient: AppTheme.primaryGradient,
-                      borderRadius: BorderRadius.circular(9),
-                    ),
-                    child: const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
-                  ),
-                  const SizedBox(width: 10),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('OtoCare AI Assistant', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppTheme.textDark)),
-                        Text('Prediksi & tips perawatan cerdas', style: TextStyle(fontSize: 11, color: AppTheme.textGrey)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.primaryBlue),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.7),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Row(
-                  children: [
-                    Text('💡', style: TextStyle(fontSize: 16)),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Tips: Ganti oli tepat waktu bisa perpanjang umur mesin hingga 30%!',
-                        style: TextStyle(fontSize: 12, color: AppTheme.textDark, height: 1.3),
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
