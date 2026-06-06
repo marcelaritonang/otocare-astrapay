@@ -25,6 +25,9 @@ class _AppointmentTabState extends State<AppointmentTab>
       'estimatedCost': 185000,
       'status': 'pending',
       'avatar': 'B',
+      'deposit': 10000,
+      'bookingCode': 'OTC-8294751',
+      'queue': 1,
     },
     {
       'id': 'BK002',
@@ -37,6 +40,9 @@ class _AppointmentTabState extends State<AppointmentTab>
       'estimatedCost': 350000,
       'status': 'pending',
       'avatar': 'S',
+      'deposit': 10000,
+      'bookingCode': 'OTC-8294752',
+      'queue': 2,
     },
     {
       'id': 'BK003',
@@ -49,6 +55,9 @@ class _AppointmentTabState extends State<AppointmentTab>
       'estimatedCost': 120000,
       'status': 'pending',
       'avatar': 'R',
+      'deposit': 10000,
+      'bookingCode': 'OTC-8294753',
+      'queue': 3,
     },
   ];
 
@@ -215,9 +224,239 @@ class _AppointmentTabState extends State<AppointmentTab>
                   ],
                 ),
               ),
+              _buildScanQRButton(),
+              const SizedBox(width: 10),
               _buildNotificationBell(),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScanQRButton() {
+    return GestureDetector(
+      onTap: () => _showScanQRDialog(),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 24),
+      ),
+    );
+  }
+
+  void _showScanQRDialog() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            Container(
+              width: 72, height: 72,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.qr_code_scanner, color: AppTheme.primaryBlue, size: 36),
+            ),
+            const SizedBox(height: 16),
+            const Text('Scan QR Booking', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const SizedBox(height: 8),
+            const Text(
+              'Scan QR code dari customer untuk verifikasi kehadiran dan check-in',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: AppTheme.textGrey, height: 1.4),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _simulateQRScan();
+                },
+                icon: const Icon(Icons.camera_alt, size: 18),
+                label: const Text('Buka Kamera'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryBlue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _showManualCodeEntry();
+                },
+                icon: const Icon(Icons.keyboard, size: 18),
+                label: const Text('Input Kode Manual'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  side: BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _simulateQRScan() {
+    // Simulate scanning the first pending booking
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (_pendingBookings.isNotEmpty) {
+        _showCheckInSuccess(_pendingBookings[0]);
+      }
+    });
+  }
+
+  void _showManualCodeEntry() {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Input Kode Booking', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: controller,
+          textCapitalization: TextCapitalization.characters,
+          decoration: InputDecoration(
+            hintText: 'Contoh: OTC-8294751',
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide(color: Colors.grey.shade200)),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              final code = controller.text.trim();
+              final found = _pendingBookings.where((b) => b['bookingCode'] == code).toList();
+              if (found.isNotEmpty) {
+                _showCheckInSuccess(found[0]);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Kode "$code" tidak ditemukan'), backgroundColor: Colors.redAccent, behavior: SnackBarBehavior.floating),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+            child: const Text('Verifikasi', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCheckInSuccess(Map<String, dynamic> booking) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 20),
+            Container(
+              width: 72, height: 72,
+              decoration: BoxDecoration(color: AppTheme.successGreen.withOpacity(0.1), shape: BoxShape.circle),
+              child: const Icon(Icons.verified, color: AppTheme.successGreen, size: 42),
+            ),
+            const SizedBox(height: 16),
+            const Text('Check-in Berhasil ✓', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(12)),
+              child: Column(
+                children: [
+                  _checkInRow('Customer', booking['customer']),
+                  _checkInRow('Motor', booking['motor']),
+                  _checkInRow('Plat', booking['plate']),
+                  _checkInRow('Layanan', booking['service']),
+                  _checkInRow('Slot', booking['timeSlot']),
+                  _checkInRow('Kode', booking['bookingCode']),
+                  const Divider(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Deposit', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(color: AppTheme.successGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                        child: Text('Rp 10.000 ✓ Refund', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.successGreen)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  setState(() {
+                    _pendingBookings.remove(booking);
+                    booking['status'] = 'confirmed';
+                    _confirmedBookings.add(booking);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${booking['customer']} sudah check-in. Deposit dikembalikan.'),
+                      backgroundColor: AppTheme.successGreen,
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.successGreen,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Konfirmasi & Mulai Servis', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _checkInRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+          Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: AppTheme.textDark)),
         ],
       ),
     );
@@ -720,6 +959,37 @@ class _AppointmentTabState extends State<AppointmentTab>
                     ),
                   ),
                 ],
+              ),
+            ],
+
+            // Deposit & queue info for pending
+            if (type == 'pending' && booking['deposit'] != null) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF8E1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.account_balance_wallet, size: 14, color: Colors.amber.shade700),
+                    const SizedBox(width: 6),
+                    Text('Deposit: Rp ${_formatCompactCurrency(booking['deposit'] as int)}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Colors.amber.shade700)),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(6)),
+                      child: Text('Antrian #${booking['queue']}', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppTheme.primaryBlue)),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(6)),
+                      child: Text('${booking['bookingCode']}', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w500, color: AppTheme.textGrey)),
+                    ),
+                  ],
+                ),
               ),
             ],
 
