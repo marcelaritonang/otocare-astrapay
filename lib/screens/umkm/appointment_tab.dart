@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../theme/app_theme.dart';
 
 class AppointmentTab extends StatefulWidget {
@@ -8,70 +9,111 @@ class AppointmentTab extends StatefulWidget {
   State<AppointmentTab> createState() => _AppointmentTabState();
 }
 
-class _AppointmentTabState extends State<AppointmentTab> with SingleTickerProviderStateMixin {
+class _AppointmentTabState extends State<AppointmentTab>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, dynamic>> _todayBookings = [
+  final List<Map<String, dynamic>> _pendingBookings = [
     {
-      'customer': 'Andi Pratama',
-      'motor': 'Honda Vario 160',
-      'service': 'Ganti Oli + Tune Up',
-      'time': '09:00',
-      'status': 'confirmed',
-      'estimatedCost': 'Rp 185.000',
-    },
-    {
-      'customer': 'Ratna Dewi',
-      'motor': 'Honda Beat 2021',
-      'service': 'Servis Berkala',
-      'time': '10:30',
-      'status': 'confirmed',
-      'estimatedCost': 'Rp 250.000',
-    },
-    {
+      'id': 'BK001',
       'customer': 'Budi Santoso',
-      'motor': 'Yamaha NMAX',
-      'service': 'Ganti Kampas Rem',
-      'time': '13:00',
+      'phone': '0812-3456-7890',
+      'motor': 'Honda Vario 160',
+      'plate': 'D 1234 ABC',
+      'service': 'Ganti Oli + Tune Up',
+      'timeSlot': '09:00 - 10:00',
+      'estimatedCost': 185000,
       'status': 'pending',
-      'estimatedCost': 'Rp 120.000',
+      'avatar': 'B',
+    },
+    {
+      'id': 'BK002',
+      'customer': 'Siti Nurhaliza',
+      'phone': '0857-9012-3456',
+      'motor': 'Yamaha NMAX 155',
+      'plate': 'D 5678 DEF',
+      'service': 'Servis CVT + Roller',
+      'timeSlot': '10:30 - 12:00',
+      'estimatedCost': 350000,
+      'status': 'pending',
+      'avatar': 'S',
+    },
+    {
+      'id': 'BK003',
+      'customer': 'Reza Mahendra',
+      'phone': '0878-1234-5678',
+      'motor': 'Honda Beat Street',
+      'plate': 'D 9012 GHI',
+      'service': 'Ganti Kampas Rem Depan',
+      'timeSlot': '13:00 - 13:45',
+      'estimatedCost': 120000,
+      'status': 'pending',
+      'avatar': 'R',
     },
   ];
 
-  final List<Map<String, dynamic>> _upcomingBookings = [
+  final List<Map<String, dynamic>> _confirmedBookings = [
     {
-      'customer': 'Dewi Lestari',
+      'id': 'BK004',
+      'customer': 'Andi Pratama',
+      'phone': '0813-7890-1234',
       'motor': 'Honda PCX 160',
-      'service': 'CVT + Roller',
-      'time': '08:30',
-      'date': 'Besok, 12 Jun',
-      'status': 'confirmed',
-      'estimatedCost': 'Rp 350.000',
-    },
-    {
-      'customer': 'Reza Mahendra',
-      'motor': 'Yamaha Aerox',
+      'plate': 'D 3456 JKL',
       'service': 'Ganti Oli + Filter Udara',
-      'time': '14:00',
-      'date': 'Besok, 12 Jun',
-      'status': 'pending',
-      'estimatedCost': 'Rp 130.000',
+      'timeSlot': '08:00 - 08:45',
+      'estimatedCost': 130000,
+      'status': 'confirmed',
+      'avatar': 'A',
     },
     {
-      'customer': 'Siti Nurhaliza',
-      'motor': 'Honda Scoopy',
-      'service': 'Tune Up',
-      'time': '09:00',
-      'date': '13 Jun 2026',
-      'status': 'pending',
-      'estimatedCost': 'Rp 100.000',
+      'id': 'BK005',
+      'customer': 'Ratna Dewi',
+      'phone': '0821-5678-9012',
+      'motor': 'Honda Scoopy 2023',
+      'plate': 'D 7890 MNO',
+      'service': 'Servis Berkala 10.000km',
+      'timeSlot': '14:00 - 15:30',
+      'estimatedCost': 250000,
+      'status': 'confirmed',
+      'avatar': 'R',
+    },
+  ];
+
+  final List<Map<String, dynamic>> _completedBookings = [
+    {
+      'id': 'BK006',
+      'customer': 'Dewi Lestari',
+      'phone': '0856-3456-7890',
+      'motor': 'Yamaha Aerox 155',
+      'plate': 'D 2345 PQR',
+      'service': 'Ganti Oli + Busi',
+      'timeSlot': '08:00 - 08:30',
+      'estimatedCost': 95000,
+      'actualCost': 95000,
+      'status': 'completed',
+      'avatar': 'D',
+      'paymentMethod': 'QRIS AstraPay',
+    },
+    {
+      'id': 'BK007',
+      'customer': 'Fajar Nugroho',
+      'phone': '0899-1234-5678',
+      'motor': 'Honda ADV 160',
+      'plate': 'D 6789 STU',
+      'service': 'Tune Up + Ganti Filter',
+      'timeSlot': '09:00 - 10:00',
+      'estimatedCost': 175000,
+      'actualCost': 200000,
+      'status': 'completed',
+      'avatar': 'F',
+      'paymentMethod': 'Cash',
     },
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -80,293 +122,811 @@ class _AppointmentTabState extends State<AppointmentTab> with SingleTickerProvid
     super.dispose();
   }
 
+  String _formatCurrency(int amount) {
+    final formatter = NumberFormat('#,###', 'id_ID');
+    return 'Rp ${formatter.format(amount)}';
+  }
+
+  int get _todayRevenue {
+    int total = 0;
+    for (var booking in _completedBookings) {
+      total += (booking['actualCost'] as int?) ?? 0;
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
           _buildHeader(),
-          _buildStats(),
-          _buildTabBar(),
-          Expanded(child: _buildTabContent()),
+          Expanded(
+            child: RefreshIndicator(
+              color: AppTheme.primaryBlue,
+              onRefresh: _handleRefresh,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildStatsRow(),
+                    _buildTabSection(),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _handleRefresh() async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    setState(() {});
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      decoration: BoxDecoration(gradient: AppTheme.primaryGradient),
-      child: Row(
-        children: [
-          Container(
-            width: 44, height: 44,
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-            child: const Icon(Icons.store, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Bengkel Jaya Motor', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold)),
-                Text('Dashboard Booking', style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(10)),
-            child: Stack(
-              children: [
-                const Icon(Icons.notifications, color: Colors.white, size: 22),
-                Positioned(
-                  right: 0, top: 0,
-                  child: Container(
-                    width: 8, height: 8,
-                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    final now = DateTime.now();
+    final dateStr = DateFormat('EEEE, d MMMM yyyy', 'id_ID').format(now);
 
-  Widget _buildStats() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          _statCard('Hari Ini', '3', AppTheme.primaryBlue),
-          const SizedBox(width: 10),
-          _statCard('Pending', '2', AppTheme.warningOrange),
-          const SizedBox(width: 10),
-          _statCard('Selesai', '8', AppTheme.successGreen),
-          const SizedBox(width: 10),
-          _statCard('Minggu Ini', '15', Colors.purple),
-        ],
-      ),
-    );
-  }
-
-  Widget _statCard(String label, String value, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.2)),
-        ),
-        child: Column(
-          children: [
-            Text(value, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-            const SizedBox(height: 2),
-            Text(label, style: TextStyle(fontSize: 10, color: color), textAlign: TextAlign.center),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTabBar() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          color: AppTheme.primaryBlue,
-          borderRadius: BorderRadius.circular(10),
+        gradient: AppTheme.primaryGradient,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
-        labelColor: Colors.white,
-        unselectedLabelColor: AppTheme.textGrey,
-        labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-        tabs: const [
-          Tab(text: 'Hari Ini'),
-          Tab(text: 'Mendatang'),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.primaryBlue.withOpacity(0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildTabContent() {
-    return TabBarView(
-      controller: _tabController,
-      children: [
-        _buildBookingList(_todayBookings, showDate: false),
-        _buildBookingList(_upcomingBookings, showDate: true),
-      ],
-    );
-  }
-
-  Widget _buildBookingList(List<Map<String, dynamic>> bookings, {required bool showDate}) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: bookings.length,
-      itemBuilder: (context, index) {
-        final booking = bookings[index];
-        return _buildBookingCard(booking, showDate: showDate);
-      },
-    );
-  }
-
-  Widget _buildBookingCard(Map<String, dynamic> booking, {required bool showDate}) {
-    final isPending = booking['status'] == 'pending';
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: isPending ? AppTheme.warningOrange.withOpacity(0.3) : Colors.grey.shade100),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, 2))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                width: 42, height: 42,
-                decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                child: const Icon(Icons.person, color: AppTheme.primaryBlue, size: 22),
-              ),
-              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(booking['customer'], style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-                    Text(booking['motor'], style: const TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                    const Text(
+                      'Manajemen Booking',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      dateStr,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: isPending ? AppTheme.warningOrange.withOpacity(0.1) : AppTheme.successGreen.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      isPending ? 'Pending' : 'Confirmed',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: isPending ? AppTheme.warningOrange : AppTheme.successGreen),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(booking['time'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-                  if (showDate && booking['date'] != null)
-                    Text(booking['date'], style: const TextStyle(fontSize: 10, color: AppTheme.textGrey)),
-                ],
-              ),
+              _buildNotificationBell(),
             ],
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(color: AppTheme.primaryBlue.withOpacity(0.06), borderRadius: BorderRadius.circular(6)),
-                child: Text(booking['service'], style: TextStyle(fontSize: 11, color: AppTheme.primaryBlue)),
-              ),
-              const Spacer(),
-              Text(booking['estimatedCost'], style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-            ],
-          ),
-          if (isPending) ...[
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _rejectBooking(booking),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red,
-                      side: const BorderSide(color: Colors.red),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                    child: const Text('Tolak', style: TextStyle(fontSize: 12)),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => _confirmBooking(booking),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.successGreen,
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                    ),
-                    child: const Text('Konfirmasi', style: TextStyle(fontSize: 12, color: Colors.white)),
-                  ),
-                ),
-              ],
-            ),
-          ],
         ],
       ),
     );
   }
 
-  void _rejectBooking(Map<String, dynamic> booking) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Tolak Booking'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildNotificationBell() {
+    return GestureDetector(
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('3 notifikasi baru'),
+            backgroundColor: AppTheme.primaryBlue,
+            behavior: SnackBarBehavior.floating,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      },
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
           children: [
-            Text('Apakah kamu yakin ingin menolak booking dari ${booking['customer']}?'),
-            const SizedBox(height: 8),
-            Text('Motor: ${booking['motor']}', style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
-            Text('Layanan: ${booking['service']}', style: const TextStyle(fontSize: 13, color: AppTheme.textGrey)),
-            const SizedBox(height: 12),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Alasan penolakan (opsional)',
-                hintText: 'Contoh: Jadwal penuh',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                isDense: true,
+            const Icon(Icons.notifications_outlined, color: Colors.white, size: 24),
+            Positioned(
+              right: 10,
+              top: 10,
+              child: Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 1.5),
+                ),
               ),
-              maxLines: 2,
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Batal'),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      child: Row(
+        children: [
+          _buildStatCard(
+            icon: Icons.calendar_today_rounded,
+            label: "Hari Ini",
+            value: '${_pendingBookings.length + _confirmedBookings.length + _completedBookings.length}',
+            color: AppTheme.primaryBlue,
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              setState(() {
-                booking['status'] = 'rejected';
-                _todayBookings.remove(booking);
-                _upcomingBookings.remove(booking);
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Booking ${booking['customer']} ditolak'),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Tolak', style: TextStyle(color: Colors.white)),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            icon: Icons.hourglass_top_rounded,
+            label: "Pending",
+            value: '${_pendingBookings.length}',
+            color: AppTheme.warningOrange,
+          ),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            icon: Icons.check_circle_outline_rounded,
+            label: "Selesai",
+            value: '${_completedBookings.length}',
+            color: AppTheme.successGreen,
+          ),
+          const SizedBox(width: 10),
+          _buildStatCard(
+            icon: Icons.account_balance_wallet_rounded,
+            label: "Revenue",
+            value: _formatCompactCurrency(_todayRevenue),
+            color: Colors.purple,
           ),
         ],
+      ),
+    );
+  }
+
+  String _formatCompactCurrency(int amount) {
+    if (amount >= 1000000) {
+      return '${(amount / 1000000).toStringAsFixed(1)}jt';
+    } else if (amount >= 1000) {
+      return '${(amount / 1000).toStringAsFixed(0)}rb';
+    }
+    return '$amount';
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: color.withOpacity(0.15)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, size: 20, color: color),
+            const SizedBox(height: 6),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: color.withOpacity(0.8),
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabSection() {
+    return Column(
+      children: [
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: TabBar(
+            controller: _tabController,
+            indicator: BoxDecoration(
+              color: AppTheme.primaryBlue,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.primaryBlue.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            labelColor: Colors.white,
+            unselectedLabelColor: AppTheme.textGrey,
+            labelStyle: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            dividerColor: Colors.transparent,
+            tabs: [
+              Tab(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Menunggu'),
+                    if (_pendingBookings.isNotEmpty) ...[
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '${_pendingBookings.length}',
+                          style: const TextStyle(fontSize: 11),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const Tab(text: 'Dikonfirmasi'),
+              const Tab(text: 'Selesai'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: _calculateTabContentHeight(),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              _buildBookingListContent(_pendingBookings, 'pending'),
+              _buildBookingListContent(_confirmedBookings, 'confirmed'),
+              _buildBookingListContent(_completedBookings, 'completed'),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  double _calculateTabContentHeight() {
+    final maxItems = [
+      _pendingBookings.length,
+      _confirmedBookings.length,
+      _completedBookings.length,
+    ].reduce((a, b) => a > b ? a : b);
+
+    if (maxItems == 0) return 300;
+    return (maxItems * 200.0) + 40;
+  }
+
+  Widget _buildBookingListContent(
+      List<Map<String, dynamic>> bookings, String type) {
+    if (bookings.isEmpty) {
+      return _buildEmptyState(type);
+    }
+
+    return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: bookings.length,
+      itemBuilder: (context, index) {
+        return _buildBookingCard(bookings[index], type);
+      },
+    );
+  }
+
+  Widget _buildEmptyState(String type) {
+    String message;
+    IconData icon;
+    switch (type) {
+      case 'pending':
+        message = 'Tidak ada booking yang menunggu konfirmasi';
+        icon = Icons.inbox_rounded;
+        break;
+      case 'confirmed':
+        message = 'Belum ada booking yang dikonfirmasi hari ini';
+        icon = Icons.event_available_rounded;
+        break;
+      case 'completed':
+        message = 'Belum ada booking yang selesai hari ini';
+        icon = Icons.task_alt_rounded;
+        break;
+      default:
+        message = 'Tidak ada data';
+        icon = Icons.hourglass_empty_rounded;
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withOpacity(0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 40, color: AppTheme.primaryBlue.withOpacity(0.4)),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppTheme.textGrey.withOpacity(0.7),
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Tarik ke bawah untuk memperbarui',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppTheme.textLight,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookingCard(Map<String, dynamic> booking, String type) {
+    Color statusColor;
+    String statusLabel;
+    switch (type) {
+      case 'pending':
+        statusColor = AppTheme.warningOrange;
+        statusLabel = 'Menunggu';
+        break;
+      case 'confirmed':
+        statusColor = AppTheme.primaryBlue;
+        statusLabel = 'Dikonfirmasi';
+        break;
+      case 'completed':
+        statusColor = AppTheme.successGreen;
+        statusLabel = 'Selesai';
+        break;
+      default:
+        statusColor = AppTheme.textGrey;
+        statusLabel = 'Unknown';
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: type == 'pending'
+              ? statusColor.withOpacity(0.3)
+              : Colors.grey.shade100,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Customer info row
+            Row(
+              children: [
+                _buildAvatar(booking['avatar'] ?? '?', statusColor),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        booking['customer'],
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textDark,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(Icons.phone_outlined,
+                              size: 12, color: AppTheme.textGrey),
+                          const SizedBox(width: 4),
+                          Text(
+                            booking['phone'],
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.textGrey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                _buildStatusBadge(statusLabel, statusColor),
+              ],
+            ),
+            const SizedBox(height: 14),
+
+            // Vehicle info
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppTheme.backgroundWhite,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.two_wheeler_rounded,
+                      size: 18, color: AppTheme.primaryBlue),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          booking['motor'],
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.textDark,
+                          ),
+                        ),
+                        Text(
+                          booking['plate'],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.textGrey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.access_time_rounded,
+                            size: 13, color: AppTheme.primaryBlue),
+                        const SizedBox(width: 4),
+                        Text(
+                          booking['timeSlot'],
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primaryBlue,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Service and cost
+            Row(
+              children: [
+                Icon(Icons.build_circle_outlined,
+                    size: 16, color: AppTheme.textGrey),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    booking['service'],
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppTheme.textDark,
+                    ),
+                  ),
+                ),
+                Text(
+                  type == 'completed'
+                      ? _formatCurrency(booking['actualCost'] as int)
+                      : _formatCurrency(booking['estimatedCost'] as int),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: type == 'completed'
+                        ? AppTheme.successGreen
+                        : AppTheme.textDark,
+                  ),
+                ),
+              ],
+            ),
+
+            // Payment method for completed
+            if (type == 'completed' && booking['paymentMethod'] != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(
+                    booking['paymentMethod'] == 'QRIS AstraPay'
+                        ? Icons.qr_code_rounded
+                        : Icons.payments_outlined,
+                    size: 14,
+                    color: AppTheme.successGreen,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Dibayar via ${booking['paymentMethod']}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.successGreen,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // Action buttons
+            if (type != 'completed') ...[
+              const SizedBox(height: 14),
+              const Divider(height: 1),
+              const SizedBox(height: 12),
+              _buildActionButtons(booking, type),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAvatar(String letter, Color color) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [color.withOpacity(0.8), color],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          letter,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(Map<String, dynamic> booking, String type) {
+    if (type == 'pending') {
+      return Row(
+        children: [
+          // Chat button
+          _buildIconActionButton(
+            icon: Icons.chat_bubble_outline_rounded,
+            color: AppTheme.primaryBlue,
+            onTap: () => _openChat(booking),
+          ),
+          const SizedBox(width: 10),
+          // Reject button
+          Expanded(
+            child: _buildActionButton(
+              label: 'Tolak',
+              icon: Icons.close_rounded,
+              color: Colors.red,
+              isOutlined: true,
+              onTap: () => _rejectBooking(booking),
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Confirm button
+          Expanded(
+            flex: 2,
+            child: _buildActionButton(
+              label: 'Konfirmasi',
+              icon: Icons.check_rounded,
+              color: AppTheme.successGreen,
+              isOutlined: false,
+              onTap: () => _confirmBooking(booking),
+            ),
+          ),
+        ],
+      );
+    } else if (type == 'confirmed') {
+      return Row(
+        children: [
+          // Chat button
+          _buildIconActionButton(
+            icon: Icons.chat_bubble_outline_rounded,
+            color: AppTheme.primaryBlue,
+            onTap: () => _openChat(booking),
+          ),
+          const SizedBox(width: 10),
+          // Complete button
+          Expanded(
+            child: _buildActionButton(
+              label: 'Tandai Selesai',
+              icon: Icons.task_alt_rounded,
+              color: AppTheme.primaryBlue,
+              isOutlined: false,
+              onTap: () => _showCompleteBottomSheet(booking),
+            ),
+          ),
+        ],
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildIconActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Icon(icon, size: 20, color: color),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required String label,
+    required IconData icon,
+    required Color color,
+    required bool isOutlined,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isOutlined ? Colors.transparent : color,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: color, width: isOutlined ? 1.5 : 0),
+            boxShadow: isOutlined
+                ? null
+                : [
+                    BoxShadow(
+                      color: color.withOpacity(0.3),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon,
+                  size: 16, color: isOutlined ? color : Colors.white),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: isOutlined ? color : Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // --- Actions ---
+
+  void _openChat(Map<String, dynamic> booking) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Membuka chat dengan ${booking['customer']}...'),
+        backgroundColor: AppTheme.primaryBlue,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
@@ -375,45 +935,586 @@ class _AppointmentTabState extends State<AppointmentTab> with SingleTickerProvid
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Konfirmasi Booking'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.successGreen.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.check_circle_rounded,
+                  color: AppTheme.successGreen, size: 22),
+            ),
+            const SizedBox(width: 12),
+            const Text('Konfirmasi Booking',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+          ],
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${booking['customer']} - ${booking['motor']}'),
+            _buildDialogInfoRow(
+                Icons.person_outlined, booking['customer']),
             const SizedBox(height: 8),
-            Text('Layanan: ${booking['service']}'),
-            Text('Estimasi: ${booking['estimatedCost']}'),
-            const SizedBox(height: 12),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Harga final (opsional)',
-                hintText: 'Rp ...',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                isDense: true,
-              ),
+            _buildDialogInfoRow(
+                Icons.two_wheeler_rounded, '${booking['motor']} (${booking['plate']})'),
+            const SizedBox(height: 8),
+            _buildDialogInfoRow(
+                Icons.build_outlined, booking['service']),
+            const SizedBox(height: 8),
+            _buildDialogInfoRow(Icons.access_time_rounded,
+                booking['timeSlot']),
+            const SizedBox(height: 8),
+            _buildDialogInfoRow(Icons.payments_outlined,
+                'Estimasi: ${_formatCurrency(booking['estimatedCost'] as int)}'),
+            const SizedBox(height: 16),
+            Text(
+              'Konfirmasi booking ini? Pelanggan akan menerima notifikasi.',
+              style: TextStyle(fontSize: 13, color: AppTheme.textGrey),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Batal')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Batal',
+                style: TextStyle(color: AppTheme.textGrey)),
+          ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(ctx);
               setState(() {
+                _pendingBookings.remove(booking);
                 booking['status'] = 'confirmed';
+                _confirmedBookings.add(booking);
               });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Booking ${booking['customer']} dikonfirmasi'),
+                  content: Text(
+                      'Booking ${booking['customer']} berhasil dikonfirmasi'),
                   backgroundColor: AppTheme.successGreen,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
               );
             },
-            child: const Text('Konfirmasi'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.successGreen,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('Konfirmasi',
+                style: TextStyle(color: Colors.white)),
           ),
         ],
+      ),
+    );
+  }
+
+  void _rejectBooking(Map<String, dynamic> booking) {
+    final reasonController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.red.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.cancel_rounded,
+                  color: Colors.red, size: 22),
+            ),
+            const SizedBox(width: 12),
+            const Text('Tolak Booking',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Booking dari ${booking['customer']} akan ditolak.',
+              style: const TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${booking['motor']} - ${booking['service']}',
+              style: const TextStyle(fontSize: 13, color: AppTheme.textGrey),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(
+                labelText: 'Alasan penolakan',
+                hintText: 'Contoh: Jadwal penuh, spare part habis',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                isDense: true,
+                prefixIcon: const Icon(Icons.comment_outlined, size: 20),
+              ),
+              maxLines: 2,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Batal',
+                style: TextStyle(color: AppTheme.textGrey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              setState(() {
+                _pendingBookings.remove(booking);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content:
+                      Text('Booking ${booking['customer']} telah ditolak'),
+                  backgroundColor: Colors.red,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+            ),
+            child:
+                const Text('Tolak', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDialogInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: AppTheme.textGrey),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(text,
+              style: const TextStyle(fontSize: 13, color: AppTheme.textDark)),
+        ),
+      ],
+    );
+  }
+
+  void _showCompleteBottomSheet(Map<String, dynamic> booking) {
+    final services = [
+      {'name': booking['service'], 'checked': true},
+      {'name': 'Cek Kelistrikan', 'checked': false},
+      {'name': 'Pembersihan Karburator', 'checked': false},
+      {'name': 'Ganti Busi', 'checked': false},
+      {'name': 'Cek Rem & Kampas', 'checked': false},
+    ];
+
+    final costController = TextEditingController(
+      text: (booking['estimatedCost'] as int).toString(),
+    );
+
+    String selectedPayment = 'QRIS AstraPay';
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // Handle bar
+                  Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.receipt_long_rounded,
+                              color: AppTheme.primaryBlue, size: 22),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Selesaikan Servis',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textDark,
+                                ),
+                              ),
+                              Text(
+                                '${booking['customer']} - ${booking['motor']}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  color: AppTheme.textGrey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          icon: const Icon(Icons.close_rounded),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.grey.shade100,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(),
+                  // Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Services done
+                          const Text(
+                            'Servis yang Dikerjakan',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textDark,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          ...services.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final service = entry.value;
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              decoration: BoxDecoration(
+                                color: (service['checked'] as bool)
+                                    ? AppTheme.primaryBlue.withOpacity(0.04)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: (service['checked'] as bool)
+                                      ? AppTheme.primaryBlue.withOpacity(0.2)
+                                      : Colors.grey.shade200,
+                                ),
+                              ),
+                              child: CheckboxListTile(
+                                dense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 8),
+                                title: Text(
+                                  service['name'] as String,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: AppTheme.textDark,
+                                    fontWeight: (service['checked'] as bool)
+                                        ? FontWeight.w500
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                                value: service['checked'] as bool,
+                                activeColor: AppTheme.primaryBlue,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4)),
+                                onChanged: (val) {
+                                  setModalState(() {
+                                    services[index]['checked'] = val ?? false;
+                                  });
+                                },
+                              ),
+                            );
+                          }),
+                          const SizedBox(height: 20),
+
+                          // Actual cost
+                          const Text(
+                            'Biaya Aktual',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textDark,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          TextField(
+                            controller: costController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              prefixText: 'Rp ',
+                              prefixStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textDark,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade300),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade300),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: const BorderSide(
+                                    color: AppTheme.primaryBlue, width: 1.5),
+                              ),
+                              filled: true,
+                              fillColor: AppTheme.backgroundWhite,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 14),
+                            ),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Estimasi awal: ${_formatCurrency(booking['estimatedCost'] as int)}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.textGrey,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Payment method
+                          const Text(
+                            'Metode Pembayaran',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textDark,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _buildPaymentOption(
+                            icon: Icons.qr_code_rounded,
+                            label: 'QRIS AstraPay',
+                            subtitle: 'Pembayaran digital, langsung masuk',
+                            isSelected: selectedPayment == 'QRIS AstraPay',
+                            color: AppTheme.primaryBlue,
+                            onTap: () {
+                              setModalState(() {
+                                selectedPayment = 'QRIS AstraPay';
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 8),
+                          _buildPaymentOption(
+                            icon: Icons.payments_outlined,
+                            label: 'Cash',
+                            subtitle: 'Pembayaran tunai',
+                            isSelected: selectedPayment == 'Cash',
+                            color: AppTheme.successGreen,
+                            onTap: () {
+                              setModalState(() {
+                                selectedPayment = 'Cash';
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Bottom button
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          final actualCost =
+                              int.tryParse(costController.text) ??
+                                  (booking['estimatedCost'] as int);
+                          setState(() {
+                            _confirmedBookings.remove(booking);
+                            booking['status'] = 'completed';
+                            booking['actualCost'] = actualCost;
+                            booking['paymentMethod'] = selectedPayment;
+                            _completedBookings.add(booking);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.check_circle_rounded,
+                                      color: Colors.white, size: 20),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Servis ${booking['customer']} selesai - ${_formatCurrency(actualCost)}',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              backgroundColor: AppTheme.successGreen,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryBlue,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          elevation: 2,
+                          shadowColor:
+                              AppTheme.primaryBlue.withOpacity(0.4),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              selectedPayment == 'QRIS AstraPay'
+                                  ? Icons.qr_code_rounded
+                                  : Icons.payments_outlined,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Minta Pembayaran',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildPaymentOption({
+    required IconData icon,
+    required String label,
+    required String subtitle,
+    required bool isSelected,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.06) : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : Colors.grey.shade200,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.textDark,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppTheme.textGrey,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              Icon(Icons.check_circle_rounded, color: color, size: 22)
+            else
+              Icon(Icons.radio_button_off_rounded,
+                  color: Colors.grey.shade300, size: 22),
+          ],
+        ),
       ),
     );
   }
