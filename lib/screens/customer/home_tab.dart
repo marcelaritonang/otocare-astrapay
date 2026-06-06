@@ -18,7 +18,7 @@ class HomeTab extends StatelessWidget {
           children: [
             _buildHeader(context),
             const SizedBox(height: 16),
-            _buildVehicleCard(),
+            _buildVehicleCard(context),
             const SizedBox(height: 16),
             _buildServiceReminder(context),
             const SizedBox(height: 20),
@@ -134,58 +134,73 @@ class HomeTab extends StatelessWidget {
     );
   }
 
-  Widget _buildVehicleCard() {
+  Widget _buildVehicleCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 56, height: 56,
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(14),
+      child: GestureDetector(
+        onTap: () => _showEditVehicleSheet(context),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4))],
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56, height: 56,
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue.withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.two_wheeler, color: AppTheme.primaryBlue, size: 30),
               ),
-              child: const Icon(Icons.two_wheeler, color: AppTheme.primaryBlue, size: 30),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Honda Vario 160', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
-                  const SizedBox(height: 2),
-                  Text('D 1234 ABC', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      _vehicleTag('2024'),
-                      const SizedBox(width: 6),
-                      _vehicleTag('CBS'),
-                      const SizedBox(width: 6),
-                      _vehicleTag('Biru'),
-                    ],
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Honda Vario 160', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                    const SizedBox(height: 2),
+                    Text('D 1234 ABC', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        _vehicleTag('2024'),
+                        const SizedBox(width: 6),
+                        _vehicleTag('CBS'),
+                        const SizedBox(width: 6),
+                        _vehicleTag('Biru'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => _showEditVehicleSheet(context),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0F4FF),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ],
+                  child: const Icon(Icons.edit_outlined, color: AppTheme.primaryBlue, size: 18),
+                ),
               ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0F4FF),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.edit_outlined, color: AppTheme.primaryBlue, size: 18),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  void _showEditVehicleSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => const _EditVehicleSheet(),
     );
   }
 
@@ -1015,4 +1030,214 @@ class _CornerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// --- Edit Vehicle Bottom Sheet ---
+class _EditVehicleSheet extends StatefulWidget {
+  const _EditVehicleSheet();
+
+  @override
+  State<_EditVehicleSheet> createState() => _EditVehicleSheetState();
+}
+
+class _EditVehicleSheetState extends State<_EditVehicleSheet> {
+  final _namaController = TextEditingController(text: 'Honda Vario 160');
+  final _platController = TextEditingController(text: 'D 1234 ABC');
+  final _tahunController = TextEditingController(text: '2024');
+  String _selectedWarna = 'Biru';
+  String _selectedTipe = 'CBS';
+  bool _saved = false;
+
+  final List<String> _warnaOptions = ['Biru', 'Hitam', 'Merah', 'Putih', 'Abu-abu'];
+  final List<String> _tipeOptions = ['CBS', 'ABS', 'ISS', 'Standard'];
+
+  @override
+  void dispose() {
+    _namaController.dispose();
+    _platController.dispose();
+    _tahunController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.8,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(width: 40, height: 4, decoration: BoxDecoration(color: const Color(0xFFE8EBF0), borderRadius: BorderRadius.circular(2))),
+          const SizedBox(height: 12),
+          // Header with close
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                const SizedBox(width: 36),
+                const Expanded(
+                  child: Text('Edit Kendaraan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark), textAlign: TextAlign.center),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(color: const Color(0xFFF7F8FC), borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.close_rounded, size: 20, color: AppTheme.textDark),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          // Form
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Vehicle icon
+                  Center(
+                    child: Container(
+                      width: 80, height: 80,
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(Icons.two_wheeler, color: AppTheme.primaryBlue, size: 44),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _buildTextField('Nama Kendaraan', _namaController, Icons.two_wheeler),
+                  const SizedBox(height: 16),
+                  _buildTextField('Plat Nomor', _platController, Icons.confirmation_number_outlined),
+                  const SizedBox(height: 16),
+                  _buildTextField('Tahun', _tahunController, Icons.calendar_today_rounded),
+                  const SizedBox(height: 16),
+                  // Tipe dropdown
+                  const Text('Tipe', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F8FC),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE8EBF0)),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _selectedTipe,
+                        isExpanded: true,
+                        icon: const Icon(Icons.expand_more, color: AppTheme.textGrey),
+                        items: _tipeOptions.map((t) => DropdownMenuItem(value: t, child: Text(t, style: const TextStyle(fontSize: 14)))).toList(),
+                        onChanged: (v) => setState(() => _selectedTipe = v!),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Warna chips
+                  const Text('Warna', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _warnaOptions.map((w) {
+                      final isSelected = w == _selectedWarna;
+                      return GestureDetector(
+                        onTap: () => setState(() => _selectedWarna = w),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppTheme.primaryBlue : const Color(0xFFF7F8FC),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: isSelected ? AppTheme.primaryBlue : const Color(0xFFE8EBF0)),
+                          ),
+                          child: Text(w, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: isSelected ? Colors.white : AppTheme.textDark)),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+          // Save button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() => _saved = true);
+                  Future.delayed(const Duration(milliseconds: 800), () {
+                    if (mounted) Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Row(
+                          children: [
+                            Icon(Icons.check_circle, color: Colors.white, size: 18),
+                            SizedBox(width: 8),
+                            Text('Kendaraan berhasil diperbarui'),
+                          ],
+                        ),
+                        backgroundColor: AppTheme.successGreen,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        margin: const EdgeInsets.all(16),
+                      ),
+                    );
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryBlue,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: _saved
+                  ? const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.check_circle, size: 20),
+                        SizedBox(width: 8),
+                        Text('Tersimpan!', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                      ],
+                    )
+                  : const Text('Simpan Perubahan', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, IconData icon) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppTheme.textDark)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          style: const TextStyle(fontSize: 14),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: AppTheme.primaryBlue, size: 20),
+            filled: true,
+            fillColor: const Color(0xFFF7F8FC),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE8EBF0))),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE8EBF0))),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          ),
+        ),
+      ],
+    );
+  }
 }
