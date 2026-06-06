@@ -16,64 +16,88 @@ class _BengkelTabState extends State<BengkelTab> {
 
   final List<Map<String, dynamic>> _bengkelList = [
     {
-      'name': 'Bengkel Jaya Motor',
-      'address': 'Jl. Raya Margahayu No. 15, Bandung',
-      'rating': 4.8,
-      'reviews': 234,
+      'name': 'AHASS Hero Motor',
+      'address': 'Jl. Soekarno Hatta No. 680, Bandung',
+      'rating': 4.3,
+      'reviews': 312,
       'distance': '1.2 km',
       'isOpen': true,
-      'services': ['Ganti Oli', 'Tune Up', 'Servis Berkala', 'Rem'],
+      'services': ['Honda Specialist', 'Ganti Oli', 'Tune Up', 'Injeksi'],
       'promo': 'Diskon 15% Ganti Oli',
-      'image': 'bengkel1',
+      'image': 'https://images.unsplash.com/photo-1636761358757-0a616eb9e17e?w=400&fit=crop',
       'priceRange': 'Rp 50rb - 500rb',
+      'lat': -6.9537,
+      'lng': 107.6566,
     },
     {
-      'name': 'Mitra Motor Sejahtera',
-      'address': 'Jl. Soekarno Hatta No. 120, Bandung',
-      'rating': 4.6,
+      'name': 'Yamaha Bahana Bandung',
+      'address': 'Jl. Soekarno Hatta No. 417, Bandung',
+      'rating': 4.2,
       'reviews': 189,
       'distance': '1.8 km',
       'isOpen': true,
-      'services': ['All Brand', 'Overhaul', 'Elektrikal', 'Body'],
+      'services': ['Yamaha Specialist', 'CVT', 'Injeksi', 'V-Belt'],
       'promo': 'Cashback Rp50rb AstraPay',
-      'image': 'bengkel2',
+      'image': 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?w=400&fit=crop',
       'priceRange': 'Rp 75rb - 1.5jt',
+      'lat': -6.9390,
+      'lng': 107.6015,
     },
     {
-      'name': 'Bengkel Pak Budi',
-      'address': 'Jl. Buah Batu No. 88, Bandung',
+      'name': 'GP Motor Bandung',
+      'address': 'Jl. Gatot Subroto No. 205, Bandung',
       'rating': 4.5,
-      'reviews': 156,
+      'reviews': 256,
       'distance': '2.1 km',
       'isOpen': true,
-      'services': ['Honda Specialist', 'Ganti Oli', 'Rem', 'Rantai'],
+      'services': ['All Brand', 'Bore Up', 'Overhaul', 'Kopling'],
       'promo': null,
-      'image': 'bengkel3',
-      'priceRange': 'Rp 30rb - 300rb',
+      'image': 'https://images.unsplash.com/photo-1650569663338-f6921d483868?w=400&fit=crop',
+      'priceRange': 'Rp 40rb - 600rb',
+      'lat': -6.9218,
+      'lng': 107.6275,
     },
     {
-      'name': 'Bengkel Abadi Motor',
-      'address': 'Jl. Cibaduyut No. 45, Bandung',
-      'rating': 4.7,
-      'reviews': 312,
+      'name': 'AHASS Ria Motor',
+      'address': 'Jl. Soekarno Hatta No. 620, Bandung',
+      'rating': 4.1,
+      'reviews': 178,
       'distance': '3.0 km',
       'isOpen': false,
-      'services': ['Yamaha Specialist', 'Injeksi', 'CVT', 'Oli'],
+      'services': ['Honda Specialist', 'Servis Berkala', 'Rem', 'Rantai'],
       'promo': 'Free Check-up 10 Titik',
-      'image': 'bengkel4',
-      'priceRange': 'Rp 40rb - 600rb',
+      'image': 'https://images.unsplash.com/photo-1578474005126-89909099fed6?w=400&fit=crop',
+      'priceRange': 'Rp 45rb - 500rb',
+      'lat': -6.9471,
+      'lng': 107.6378,
     },
     {
-      'name': 'Speed Motor Workshop',
-      'address': 'Jl. Pasteur No. 200, Bandung',
-      'rating': 4.4,
-      'reviews': 98,
+      'name': 'Yamaha Arista',
+      'address': 'Jl. Soekarno Hatta No. 717, Bandung',
+      'rating': 4.3,
+      'reviews': 145,
       'distance': '3.5 km',
       'isOpen': true,
-      'services': ['All Brand', 'Bore Up', 'Tune Up', 'Kopling'],
+      'services': ['Yamaha Specialist', 'Tune Up', 'Injeksi', 'Oli'],
       'promo': 'Gratis Nitrogen',
-      'image': 'bengkel5',
-      'priceRange': 'Rp 50rb - 2jt',
+      'image': 'https://images.unsplash.com/photo-1581858544302-c40e2254ff87?w=400&fit=crop',
+      'priceRange': 'Rp 50rb - 800rb',
+      'lat': -6.9555,
+      'lng': 107.6620,
+    },
+    {
+      'name': 'Bengkel TOP 1 Lombok Motor',
+      'address': 'Jl. Lombok No. 11S, Bandung',
+      'rating': 4.4,
+      'reviews': 203,
+      'distance': '4.0 km',
+      'isOpen': true,
+      'services': ['All Brand', 'Ganti Oli', 'Tune Up', 'Elektrikal'],
+      'promo': 'Paket Hemat Rp 99rb',
+      'image': 'https://images.unsplash.com/photo-1604260324056-45f7c778754a?w=400&fit=crop',
+      'priceRange': 'Rp 35rb - 400rb',
+      'lat': -6.9105,
+      'lng': 107.6045,
     },
   ];
 
@@ -217,10 +241,12 @@ class _BengkelTabState extends State<BengkelTab> {
                     MarkerLayer(
                       markers: [
                         Marker(point: LatLng(-6.9175, 107.6191), width: 20, height: 20, child: Container(width: 16, height: 16, decoration: BoxDecoration(color: AppTheme.primaryBlue, shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 3), boxShadow: [BoxShadow(color: AppTheme.primaryBlue.withOpacity(0.3), blurRadius: 8)]))),
-                        Marker(point: LatLng(-6.9210, 107.6250), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.red.shade700, size: 24)),
-                        Marker(point: LatLng(-6.9140, 107.6130), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.successGreen, size: 24)),
-                        Marker(point: LatLng(-6.9200, 107.6100), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.warningOrange, size: 24)),
-                        Marker(point: LatLng(-6.9120, 107.6220), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.purple, size: 24)),
+                        Marker(point: LatLng(-6.9537, 107.6566), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.red.shade700, size: 24)),
+                        Marker(point: LatLng(-6.9390, 107.6015), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 24)),
+                        Marker(point: LatLng(-6.9218, 107.6275), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.successGreen, size: 24)),
+                        Marker(point: LatLng(-6.9471, 107.6378), width: 30, height: 30, child: Icon(Icons.location_on, color: AppTheme.warningOrange, size: 24)),
+                        Marker(point: LatLng(-6.9555, 107.6620), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.purple, size: 24)),
+                        Marker(point: LatLng(-6.9105, 107.6045), width: 30, height: 30, child: Icon(Icons.location_on, color: Colors.teal, size: 24)),
                       ],
                     ),
                   ],
@@ -290,13 +316,19 @@ class _BengkelTabState extends State<BengkelTab> {
           children: [
             Row(
               children: [
-                Container(
-                  width: 50, height: 50,
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: SizedBox(
+                    width: 56, height: 56,
+                    child: Image.network(
+                      bengkel['image'] ?? '',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        child: const Icon(Icons.build, color: AppTheme.primaryBlue, size: 24),
+                      ),
+                    ),
                   ),
-                  child: const Icon(Icons.build, color: AppTheme.primaryBlue, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -384,11 +416,12 @@ class _FullMapScreen extends StatelessWidget {
   const _FullMapScreen({required this.bengkelList});
 
   static const List<LatLng> _bengkelCoords = [
-    LatLng(-6.9210, 107.6250),
-    LatLng(-6.9140, 107.6130),
-    LatLng(-6.9200, 107.6100),
-    LatLng(-6.9120, 107.6220),
-    LatLng(-6.9250, 107.6180),
+    LatLng(-6.9537, 107.6566), // AHASS Hero Motor
+    LatLng(-6.9390, 107.6015), // Yamaha Bahana
+    LatLng(-6.9218, 107.6275), // GP Motor
+    LatLng(-6.9471, 107.6378), // AHASS Ria Motor
+    LatLng(-6.9555, 107.6620), // Yamaha Arista
+    LatLng(-6.9105, 107.6045), // TOP 1 Lombok Motor
   ];
 
   @override
