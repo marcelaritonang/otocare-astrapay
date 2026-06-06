@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../theme/app_theme.dart';
-import 'chat_screen.dart';
 
 class BengkelTab extends StatefulWidget {
   const BengkelTab({super.key});
@@ -27,6 +27,7 @@ class _BengkelTabState extends State<BengkelTab> {
       'promo': 'Diskon 15% Ganti Oli',
       'image': 'https://images.unsplash.com/photo-1636761358757-0a616eb9e17e?w=400&fit=crop',
       'priceRange': 'Rp 50rb - 500rb',
+      'whatsapp': '6281234567890',
       'lat': -6.9537,
       'lng': 107.6566,
     },
@@ -41,6 +42,7 @@ class _BengkelTabState extends State<BengkelTab> {
       'promo': 'Cashback Rp50rb AstraPay',
       'image': 'https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?w=400&fit=crop',
       'priceRange': 'Rp 75rb - 1.5jt',
+      'whatsapp': '6281298765432',
       'lat': -6.9390,
       'lng': 107.6015,
     },
@@ -55,6 +57,7 @@ class _BengkelTabState extends State<BengkelTab> {
       'promo': null,
       'image': 'https://images.unsplash.com/photo-1650569663338-f6921d483868?w=400&fit=crop',
       'priceRange': 'Rp 40rb - 600rb',
+      'whatsapp': '6285712345678',
       'lat': -6.9218,
       'lng': 107.6275,
     },
@@ -69,6 +72,7 @@ class _BengkelTabState extends State<BengkelTab> {
       'promo': 'Free Check-up 10 Titik',
       'image': 'https://images.unsplash.com/photo-1578474005126-89909099fed6?w=400&fit=crop',
       'priceRange': 'Rp 45rb - 500rb',
+      'whatsapp': '6281345678901',
       'lat': -6.9471,
       'lng': 107.6378,
     },
@@ -83,6 +87,7 @@ class _BengkelTabState extends State<BengkelTab> {
       'promo': 'Gratis Nitrogen',
       'image': 'https://images.unsplash.com/photo-1581858544302-c40e2254ff87?w=400&fit=crop',
       'priceRange': 'Rp 50rb - 800rb',
+      'whatsapp': '6282112345678',
       'lat': -6.9555,
       'lng': 107.6620,
     },
@@ -97,6 +102,7 @@ class _BengkelTabState extends State<BengkelTab> {
       'promo': 'Paket Hemat Rp 99rb',
       'image': 'https://images.unsplash.com/photo-1604260324056-45f7c778754a?w=400&fit=crop',
       'priceRange': 'Rp 35rb - 400rb',
+      'whatsapp': '6289876543210',
       'lat': -6.9105,
       'lng': 107.6045,
     },
@@ -498,6 +504,14 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
 
   final List<String> _timeSlots = ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00'];
 
+  void _openWhatsApp(String phone, String bengkelName) async {
+    final message = Uri.encodeComponent('Halo $bengkelName, saya ingin booking service via OtoCare. Apakah tersedia slot hari ini?');
+    final url = Uri.parse('https://wa.me/$phone?text=$message');
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bengkel = widget.bengkel;
@@ -546,7 +560,7 @@ class _BengkelDetailScreenState extends State<BengkelDetailScreen> {
               IconButton(icon: const Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
               Expanded(child: Text(bengkel['name'], style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600))),
               GestureDetector(
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ChatScreen(bengkelName: bengkel['name']))),
+                onTap: () => _openWhatsApp(bengkel['whatsapp'] ?? '6281234567890', bengkel['name']),
                 child: const Icon(Icons.chat_bubble_outline, color: Colors.white),
               ),
               const SizedBox(width: 12),
