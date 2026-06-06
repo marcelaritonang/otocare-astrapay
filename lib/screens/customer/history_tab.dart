@@ -429,7 +429,7 @@ class HistoryTab extends StatelessWidget {
             const SizedBox(height: 20),
             const Text('Scan Struk Service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
             const SizedBox(height: 8),
-            const Text('Foto struk bengkel, AI akan parsing otomatis', style: TextStyle(fontSize: 13, color: AppTheme.textGrey)),
+            const Text('Foto struk bengkel, sistem akan parsing otomatis', style: TextStyle(fontSize: 13, color: AppTheme.textGrey)),
             const SizedBox(height: 24),
             Expanded(
               child: Container(
@@ -493,13 +493,13 @@ class HistoryTab extends StatelessWidget {
                 Container(
                   width: 48, height: 48,
                   decoration: BoxDecoration(color: AppTheme.successGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.auto_awesome, color: AppTheme.successGreen, size: 24),
+                  child: const Icon(Icons.check_circle, color: AppTheme.successGreen, size: 24),
                 ),
                 const SizedBox(width: 12),
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('AI Parsing Berhasil!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text('Parsing Berhasil!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     Text('Data berhasil diekstrak dari struk', style: TextStyle(fontSize: 12, color: AppTheme.textGrey)),
                   ],
                 ),
