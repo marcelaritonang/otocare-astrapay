@@ -28,7 +28,73 @@ class _UmkmMainState extends State<UmkmMain> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: Column(
+        children: [
+          // Top bar with back button
+          Container(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 8, left: 16, right: 16, bottom: 12),
+            decoration: BoxDecoration(
+              gradient: AppTheme.primaryGradient,
+            ),
+            child: Row(
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 16),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  width: 32, height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.build_rounded, color: Colors.white, size: 16),
+                ),
+                const SizedBox(width: 8),
+                const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('OtoCare Bengkel', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                    Text('Dashboard Pemilik', style: TextStyle(color: Colors.white70, fontSize: 11)),
+                  ],
+                ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Stack(
+                      children: [
+                        const Center(child: Icon(Icons.notifications_rounded, color: Colors.white, size: 20)),
+                        Positioned(
+                          top: 6, right: 6,
+                          child: Container(
+                            width: 8, height: 8,
+                            decoration: const BoxDecoration(color: Color(0xFFFF4444), shape: BoxShape.circle),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: _screens[_currentIndex]),
+        ],
+      ),
       bottomNavigationBar: _buildBottomNav(),
       floatingActionButton: _buildHelpButton(context),
     );

@@ -764,9 +764,27 @@ class _ScanStrukSheetState extends State<_ScanStrukSheet> {
         children: [
           const SizedBox(height: 12),
           Container(width: 40, height: 4, decoration: BoxDecoration(color: const Color(0xFFE8EBF0), borderRadius: BorderRadius.circular(2))),
-          const SizedBox(height: 20),
-          // Title
-          const Text('Scan Struk Service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+          const SizedBox(height: 12),
+          // Title with close button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                const SizedBox(width: 36),
+                const Expanded(
+                  child: Text('Scan Struk Service', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.textDark), textAlign: TextAlign.center),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(color: const Color(0xFFF7F8FC), borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.close_rounded, size: 20, color: AppTheme.textDark),
+                  ),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 6),
           Text('Arahkan kamera ke struk untuk menyimpan riwayat service', style: TextStyle(fontSize: 12, color: AppTheme.textGrey), textAlign: TextAlign.center),
           const SizedBox(height: 24),
